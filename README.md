@@ -41,3 +41,8 @@ First of all, I defined a state machine to control the system behavior based on 
 For this project, I considered that the parachute will be deployed on apogee detection in order to simplify things a little. Based on all of this, I defined the following state machine:
 
 /*! TODO */
+
+![FW State Machine](https://github.com/user-attachments/assets/309f61ed-bc05-4bf5-9b9c-621f50178c9a)
+![FW Flowchart](https://github.com/user-attachments/assets/6e1fbad9-d223-4e75-9106-50fbe2ec781a)
+![FW Architecture](https://github.com/user-attachments/assets/4a856157-59f2-4fc2-b26b-c7480194d388)
+
