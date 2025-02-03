@@ -19,7 +19,16 @@ Suborbital model rockets tend to (although, more often than desired, they don't)
 - Slow Descent
 - Landing
 
-![rktflight](https://github.com/user-attachments/assets/89e4ac4f-ced1-4a4b-8422-af78ff70ac67)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/89e4ac4f-ced1-4a4b-8422-af78ff70ac67" alt="Flight Stages (NASA)" width="500">
+  <br>Source: NASA's <a href="https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/flight-of-a-model-rocket/" target="_blank">Beginners Guide to Aeronautics</a>
+</p>
+<!-- ![rktflight](https://github.com/user-attachments/assets/89e4ac4f-ced1-4a4b-8422-af78ff70ac67) -->
+
+<p align="center">
+  <br><img src="https://github.com/user-attachments/assets/95ef7178-a636-40cd-b9dc-83a80c350e83" alt="Flight Stages Resultant Analysis" width="500">
+</p>
+<!-- ![flight_stages](https://github.com/user-attachments/assets/95ef7178-a636-40cd-b9dc-83a80c350e83) -->
 
 Notice that the most important events that happen during a flight - as far as software development goes - are the transitions between stages:
 - Launch: transition from being still and moving, hopefully, upwards
@@ -30,7 +39,10 @@ Notice that the most important events that happen during a flight - as far as so
 
 Consider that the avionics system will have some kind of IMU (Inertial Measurement Unit), which basically tells us the instantaneous acceleration along its 3 axes. It will also feature a barometric sensor to measure the air pressure during flight. Now, let's imagine a rocket flying without any rotation, so that the Z-axis is always pointing up (this will never actually happen, but it's good for demonstration purposes). We can plot a graph with the approximate resultant acceleration (in red) and the corresponding velocity (in green) during this flight.
 
-// graph
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/daaf0ec1-653c-4937-aa67-dafecf62db17" alt="Flight Behavior" width="500">
+</p>
+<!-- ![desmos-graph](https://github.com/user-attachments/assets/daaf0ec1-653c-4937-aa67-dafecf62db17) -->
 
 As we can see in this simplified example, the resultant acceleration starts at 0g (1g = 9.8 m/s^2). It rises up to about 5g and then falls back down to 0g. This period where the acceleration is positive corresponds to the powered ascent, as illustrated on the previous image. Note that the rocket hits its maximum velocity when the acceleration is 0 (of course, since a=dv/dt). Then, the vehicle experiences free fall for some time (a = -1g) until the parachutes are deployed, at around T+28 seconds. From this point, the rocket falls at a constant speed only to hit the ground at T+41 seconds.
 
@@ -44,7 +56,10 @@ The main objective with this project is to develop the device firmware, so hardw
 ## Firmware
 First of all, I defined a state machine to control the system behavior based on rockect flight phases. For this project, I considered that the parachute shall be deployed on apogee detection in order to simplify things a little.
 
-![FW State Machine](https://github.com/user-attachments/assets/309f61ed-bc05-4bf5-9b9c-621f50178c9a)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/01065d75-7710-46db-901a-336ab3c081d6" alt="FW State Machine" width="800">
+</p>
+<!-- ![FW State Machine](https://github.com/user-attachments/assets/01065d75-7710-46db-901a-336ab3c081d6) -->
 
 Basically, the system is initialized on the first state and, if everything is working properly, moves to S1 where the operation mode is selected based on some system data stored in flash memory. There are only 2 modes: Data Log is used to read the stored data after a flight and Flight mode is where the magic happens.
 
@@ -54,11 +69,17 @@ Finally, after landing has been detected (and if the rocket is still a rocket) t
 
 All of this is operation is illustrated in the following flowchart (also under development).
 
-![FW Flowchart](https://github.com/user-attachments/assets/6e1fbad9-d223-4e75-9106-50fbe2ec781a)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/172260db-716e-4f8e-a2d3-e177a55b31c4" alt="FW Flowchart" width="800">
+</p>
+<!-- ![FW Flowchart](https://github.com/user-attachments/assets/172260db-716e-4f8e-a2d3-e177a55b31c4) -->
 
 Lastly, the system will be roughly organized as follows (yes, you guessed it, this is also not the final version).
 
-![FW Architecture](https://github.com/user-attachments/assets/4a856157-59f2-4fc2-b26b-c7480194d388)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/b13627f9-4054-48e6-9eae-df8949527664" alt="FW Architecture" width="500">
+</p>
+<!-- ![FW Architecture](https://github.com/user-attachments/assets/b13627f9-4054-48e6-9eae-df8949527664) -->
 
 ## Tests and Validation
 Untested rocket code is bad rocket code. So, I need a good way of testing this firmware to validate individual blocks and also the complete system working together. Of course, the biggest issue here is that I don't have multiple rockets to fire up and watch what happens. I am still not sure how to do this (if you have any ideas or advices, please tell me), but I fell like what I need is a combination of these 2 things:
