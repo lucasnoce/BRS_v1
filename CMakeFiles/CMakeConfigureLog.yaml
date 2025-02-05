@@ -59,7 +59,7 @@ events:
       Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CMakeCCompilerId.o"
       
       The C compiler identification is GNU, found in:
-        C:/Users/lucas/Documents/Projetos/BRS/LNBRS/brs_v1/CMakeFiles/3.28.1/CompilerIdC/CMakeCCompilerId.o
+        C:/Users/lucas/Documents/Projetos/BRS/BRS_v1/CMakeFiles/3.28.1/CompilerIdC/CMakeCCompilerId.o
       
   -
     kind: "message-v1"
@@ -124,6 +124,6 @@ events:
       Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CMakeCXXCompilerId.o"
       
       The CXX compiler identification is GNU, found in:
-        C:/Users/lucas/Documents/Projetos/BRS/LNBRS/brs_v1/CMakeFiles/3.28.1/CompilerIdCXX/CMakeCXXCompilerId.o
+        C:/Users/lucas/Documents/Projetos/BRS/BRS_v1/CMakeFiles/3.28.1/CompilerIdCXX/CMakeCXXCompilerId.o
       
 ...

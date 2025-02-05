@@ -19,7 +19,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # Set the project name
-set(CMAKE_PROJECT_NAME brs_v1)
+set(CMAKE_PROJECT_NAME BRS_v1)
 
 # Include toolchain file
 include("cmake/gcc-arm-none-eabi.cmake")
