@@ -1,0 +1,33 @@
+# -----------------------------
+# STM32 Project .gitignore File
+# -----------------------------
+
+# Ignore build output and binaries
+*.o
+*.elf
+*.bin
+*.hex
+*.map
+*.lst
+
+# Ignore CubeMX project files
+*.ioc
+
+# Ignore CubeIDE-specific files and folders
+*.launch
+*.log
+*.swp
+*.bak
+.vscode/
+.idea/
+.metadata/
+Debug/
+Release/
+
+# Ignore Git merge conflict files
+*.orig
+
+# Ignore user-specific settings
+*.suo
+*.user
+*.ldb
