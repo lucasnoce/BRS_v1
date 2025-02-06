@@ -1,7 +1,7 @@
 /**
  **************************************************************************************************
- * @file           : tca9534a_reg_map.h
- * @brief          : Register map of the TCA9534A IO Expander
+ * @file           : brs_errno.h
+ * @brief          : Error code macros
  **************************************************************************************************
  * @author         : Lucas Noce
  * @date           : 2025/02/05
@@ -34,45 +34,15 @@
  */
 
 
-#ifndef __TCA9534A_REG_MAP_H__
-#define __TCA9534A_REG_MAP_H__
+#ifndef __BRS_ERRNO_H__
+#define __BRS_ERRNO_H__
 
 
-/* I2C address */
-#define TCA9534A_I2C_ADDR_HW_A0   0
-#define TCA9534A_I2C_ADDR_HW_A1   0
-#define TCA9534A_I2C_ADDR_HW_A2   0
-#define TCA9534A_I2C_ADDR         ( 0b0111000 |\
-                                  ( ( TCA9534A_I2C_ADDR_HW_A0 << 0 ) & 0x01 ) |\
-                                  ( ( TCA9534A_I2C_ADDR_HW_A1 << 1 ) & 0x02 ) |\
-                                  ( ( TCA9534A_I2C_ADDR_HW_A2 << 2 ) & 0x04 ) )
+/* Definitions ================================================================================= */
 
+#define BRS_RET_OK              0
+#define BRS_ERR_NULL_POINTER   -1
+#define BRS_ERR_INVALID_PARAM  -2
+#define BRS_ERR_NOT_INIT       -3
 
-/* Command byte */
-#define TCA9534A_CMD_REG_INPUT_PORT           0x00
-#define TCA9534A_CMD_REG_OUTPUT_PORT          0x01
-#define TCA9534A_CMD_REG_POLARITY             0x02
-#define TCA9534A_CMD_REG_CONFIG               0x03
-
-
-/* Register values description */
-#define TCA9534A_REG_VAL_INPUT_LOW            0
-#define TCA9534A_REG_VAL_INPUT_HIGH           1
-
-#define TCA9534A_REG_VAL_OUTPUT_LOW           0
-#define TCA9534A_REG_VAL_OUTPUT_HIGH          1
-
-#define TCA9534A_REG_VAL_POLARITY_NORMAL      0
-#define TCA9534A_REG_VAL_POLARITY_INVERTED    1
-
-#define TCA9534A_REG_VAL_CONFIG_OUTPUT        0
-#define TCA9534A_REG_VAL_CONFIG_INPUT         1
-
-
-#define TCA9534A_REG_VAL_INPUT_PORT_DEFAULT   0x00  // Initial state unknown, HW dependent
-#define TCA9534A_REG_VAL_OUTPUT_PORT_DEFAULT  0xFF
-#define TCA9534A_REG_VAL_POLARITY_DEFAULT     0x00
-#define TCA9534A_REG_VAL_CONFIG_DEFAULT       0xFF
-
-
-#endif /* __TCA9534A_REG_MAP_H__ */
+#endif /* __BRS_ERRNO_H__ */
