@@ -53,6 +53,14 @@
 
 /* Typedefs ==================================================================================== */
 
+/*!
+  @brief        Current state of IO Expander.
+
+  @param        input: input value of each GPIO.
+  @param        output: output value of each GPIO.
+  @param        polarity: polarity value of each GPIO.
+  @param        direction: direction value of each GPIO.
+*/
 typedef struct IO_EXPANDER_DATA_TAG{
   uint8_t input;
   uint8_t output;
@@ -104,8 +112,8 @@ int8_t io_expander_init( I2C_HandleTypeDef *hi2c ){
 
   io_expander_hi2c = hi2c;
   ret = io_expander_config( IO_EXPANDER_ALL_GPIOS,
-                            IO_EXPANDER_REG_VAL_CONFIG_INPUT,
-                            IO_EXPANDER_REG_VAL_POLARITY_NORMAL );
+                            ~( IO_EXPANDER_REG_VAL_DIRECTION_INPUT - 1 ),
+                            ~( IO_EXPANDER_REG_VAL_POLARITY_NORMAL - 1 ) );  // ~0 = 0xFF and ~(-1) = 0x00
   
   if( ret == 0 )
     io_expander_driver_init = true;
@@ -134,7 +142,7 @@ int8_t io_expander_config( uint8_t gpio, uint8_t direction, uint8_t polarity ){
     _io_expander_set_data_bit( &io_expander_data.polarity, ( polarity & 0x01 ), gpio );
   }
 
-  ret += _io_expander_i2c_write( IO_EXPANDER_CMD_REG_CONFIG, &io_expander_data.direction );
+  ret += _io_expander_i2c_write( IO_EXPANDER_CMD_REG_DIRECTION, &io_expander_data.direction );
   ret += _io_expander_i2c_write( IO_EXPANDER_CMD_REG_POLARITY, &io_expander_data.polarity );
   
   return ret;
@@ -159,7 +167,7 @@ int8_t io_expander_write( uint8_t gpio, uint8_t value ){
     _io_expander_set_data_bit( &io_expander_data.output, ( value & 0x01 ), gpio );
   }
   
-  ret = _io_expander_i2c_write( IO_EXPANDER_CMD_REG_CONFIG, &io_expander_data.output );
+  ret = _io_expander_i2c_write( IO_EXPANDER_CMD_REG_DIRECTION, &io_expander_data.output );
   
   return ret;
 }

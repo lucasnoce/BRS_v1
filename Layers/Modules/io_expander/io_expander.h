@@ -125,6 +125,7 @@ int8_t io_expander_init( I2C_HandleTypeDef *hi2c );
 */
 int8_t io_expander_config( uint8_t gpio, uint8_t direction, uint8_t polarity );
 
+// As of BRS_v1, IO Expander will only be used as output, so this method is currently unnecessary
 // int8_t io_expander_read( uint8_t gpio, uint8_t *value );
 
 /*!
