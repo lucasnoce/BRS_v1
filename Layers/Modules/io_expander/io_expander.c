@@ -37,9 +37,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "stm32f4xx_hal_i2c.h"
-
 #include "Layers/Utilities/brs_errno.h"
+#include "Layers/BSP/bsp_i2c.h"
 #include "io_expander.h"
 
 
@@ -70,8 +69,6 @@ typedef struct IO_EXPANDER_DATA_TAG{
 
 /* Static Variables ============================================================================ */
 
-static I2C_HandleTypeDef *io_expander_hi2c = NULL;
-
 static IO_EXPANDER_DATA_T io_expander_data;
 
 static bool io_expander_driver_init = false;
@@ -101,16 +98,12 @@ static inline int8_t _io_expander_i2c_write( uint8_t reg, uint8_t *p_data );
 
 /* Global Functions Implementation ============================================================= */
 
-int8_t io_expander_init( I2C_HandleTypeDef *hi2c ){
+int8_t io_expander_init( void ){
   int8_t ret = BRS_RET_OK;
-
-  if( hi2c == NULL )
-    return BRS_ERR_NULL_POINTER;
   
   if( io_expander_driver_init )
     return BRS_RET_OK;
 
-  io_expander_hi2c = hi2c;
   ret = io_expander_config( IO_EXPANDER_ALL_GPIOS,
                             ~( IO_EXPANDER_REG_VAL_DIRECTION_INPUT - 1 ),
                             ~( IO_EXPANDER_REG_VAL_POLARITY_NORMAL - 1 ) );  // ~0 = 0xFF and ~(-1) = 0x00
@@ -123,9 +116,6 @@ int8_t io_expander_init( I2C_HandleTypeDef *hi2c ){
 
 int8_t io_expander_config( uint8_t gpio, uint8_t direction, uint8_t polarity ){
   int8_t ret = BRS_RET_OK;
-
-  if( io_expander_hi2c == NULL )
-    return BRS_ERR_NULL_POINTER;
   
   if( !io_expander_driver_init )
     return BRS_ERR_NOT_INIT;
@@ -150,9 +140,6 @@ int8_t io_expander_config( uint8_t gpio, uint8_t direction, uint8_t polarity ){
 
 int8_t io_expander_write( uint8_t gpio, uint8_t value ){
   int8_t ret = BRS_RET_OK;
-
-  if( io_expander_hi2c == NULL )
-    return BRS_ERR_NULL_POINTER;
   
   if( !io_expander_driver_init )
     return BRS_ERR_NOT_INIT;
@@ -179,8 +166,5 @@ static inline void _io_expander_set_data_bit( uint8_t *p_data, uint8_t val, uint
 }
 
 static inline int8_t _io_expander_i2c_write( uint8_t reg, uint8_t *p_data ){
-  return HAL_I2C_Mem_Write( io_expander_hi2c, IO_EXPANDER_I2C_ADDR,
-                            reg, I2C_MEMADD_SIZE_8BIT,
-                            p_data, sizeof(uint8_t),
-                            IO_EXPANDER_STD_TIMEOUT );
+  return bsp_i2c_write_reg( IO_EXPANDER_I2C_ADDR, reg, p_data );
 }

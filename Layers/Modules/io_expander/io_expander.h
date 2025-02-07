@@ -102,11 +102,11 @@ typedef enum{
 
   @details      Initializes all the GPIOs as inputs.
 
-  @param[in]    hi2c: pointer to the STM32 I2C bus handle to be used.
+  @param        none.
 
   @returns      0 if success, `BRS_ERR_[]` otherwise (see brs_errno.h).
 */
-int8_t io_expander_init( I2C_HandleTypeDef *hi2c );
+int8_t io_expander_init( void );
 
 /*!
   @brief        Configures the IO Expander GPIOs.
