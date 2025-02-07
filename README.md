@@ -50,6 +50,8 @@ Just to be very clear, this example is absolutely, completely inaccurate and ove
 
 # Project Requirements and definitions
 
+For a more updated project information, please refer to the General Requirements document on Documentation folder. The images and descriptions in this section may be out of date.
+
 ## Hardware
 The main objective with this project is to develop the device firmware, so hardware requirements are being defined based on components I have easy access to, mainly some off-the-shelf modules. If everything goes well after prototyping, I might review the project and design some proper hardware for it, but for now it is what it is.
 
@@ -57,9 +59,9 @@ The main objective with this project is to develop the device firmware, so hardw
 First of all, I defined a state machine to control the system behavior based on rockect flight phases. For this project, I considered that the parachute shall be deployed on apogee detection in order to simplify things a little.
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/01065d75-7710-46db-901a-336ab3c081d6" alt="FW State Machine" width="800">
+  <img src="https://github.com/user-attachments/assets/31c2614a-2e3a-4176-8dae-46d438cfd16f" alt="FW State Machine" width="800">
 </p>
-<!-- ![FW State Machine](https://github.com/user-attachments/assets/01065d75-7710-46db-901a-336ab3c081d6) -->
+<!-- ![FW State Machine](https://github.com/user-attachments/assets/31c2614a-2e3a-4176-8dae-46d438cfd16f) -->
 
 Basically, the system is initialized on the first state and, if everything is working properly, moves to S1 where the operation mode is selected based on some system data stored in flash memory. There are only 2 modes: Data Log is used to read the stored data after a flight and Flight mode is where the magic happens.
 
