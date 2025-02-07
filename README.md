@@ -77,9 +77,9 @@ All of this is operation is illustrated in the following flowchart (also under d
 Lastly, the system will be roughly organized as follows (yes, you guessed it, this is also not the final version).
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/b13627f9-4054-48e6-9eae-df8949527664" alt="FW Architecture" width="500">
+  <img src="https://github.com/user-attachments/assets/1cfd1d3e-59c2-4a47-b8ed-0f1b9415cbda" alt="FW Architecture" width="800">
 </p>
-<!-- ![FW Architecture](https://github.com/user-attachments/assets/b13627f9-4054-48e6-9eae-df8949527664) -->
+<!-- ![FW Architecture](https://github.com/user-attachments//assets/1cfd1d3e-59c2-4a47-b8ed-0f1b9415cbda) -->
 
 ## Tests and Validation
 Untested rocket code is bad rocket code. So, I need a good way of testing this firmware to validate individual blocks and also the complete system working together. Of course, the biggest issue here is that I don't have multiple rockets to fire up and watch what happens. I am still not sure how to do this (if you have any ideas or advices, please tell me), but I fell like what I need is a combination of these 2 things:
