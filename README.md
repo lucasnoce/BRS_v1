@@ -23,7 +23,7 @@ Suborbital model rockets tend to (although, more often than desired, they don't)
 
 <p align="center">
   <br>Flight Stages
-  <img src="https://github.com/user-attachments/assets/89e4ac4f-ced1-4a4b-8422-af78ff70ac67" alt="Flight Stages (NASA)" width="500">
+  <br><img src="https://github.com/user-attachments/assets/89e4ac4f-ced1-4a4b-8422-af78ff70ac67" alt="Flight Stages (NASA)" width="500">
   <br>Source: NASA's <a href="https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/flight-of-a-model-rocket/" target="_blank">Beginners Guide to Aeronautics</a>
 </p>
 <!-- ![rktflight](https://github.com/user-attachments/assets/89e4ac4f-ced1-4a4b-8422-af78ff70ac67) -->
@@ -67,10 +67,10 @@ First of all, I defined a [State Machine](Documentation/FW%20State%20Machine.png
 
 <p align="center">
   <br>FW State Machine
-  <img src="https://github.com/user-attachments/assets/31c2614a-2e3a-4176-8dae-46d438cfd16f" alt="FW State Machine" width="800">
+  <img src="https://github.com/user-attachments/assets/7c7314bc-370f-4cdf-bbdf-a78096dcc1fc" alt="FW State Machine" width="800">
   <br>Source: Image created by the author
 </p>
-<!-- ![FW State Machine](https://github.com/user-attachments/assets/31c2614a-2e3a-4176-8dae-46d438cfd16f) -->
+<!-- ![FW State Machine](https://github.com/user-attachments/assets/7c7314bc-370f-4cdf-bbdf-a78096dcc1fc) -->
 
 Basically, the system is initialized on the first state and, if everything is working properly, moves to S1 where the operation mode is selected based on a mechanical switch state. There are only 2 modes: UART mode is used to select secondary opModes (such as reading post-flight data and configuring the system) and Flight mode is where the magic happens.
 
@@ -82,19 +82,19 @@ All of this is operation is illustrated in the following [Flowchart](Documentati
 
 <p align="center">
   <br>FW Flowchart
-  <img src="https://github.com/user-attachments/assets/172260db-716e-4f8e-a2d3-e177a55b31c4" alt="FW Flowchart" width="800">
+  <img src="https://github.com/user-attachments/assets/43fa580d-00c4-4f8f-b531-e44d9dea57e4" alt="FW Flowchart" width="800">
   <br>Source: Image created by the author
 </p>
-<!-- ![FW Flowchart](https://github.com/user-attachments/assets/172260db-716e-4f8e-a2d3-e177a55b31c4) -->
+<!-- ![FW Flowchart](https://github.com/user-attachments/assets/43fa580d-00c4-4f8f-b531-e44d9dea57e4) -->
 
 Lastly, the system will be organized according to the following [Architecture](Documentation/FW%20Architecture.png) (yes, you guessed it, this is also not the final version).
 
 <p align="center">
   <br>FW Architecture
-  <img src="https://github.com/user-attachments/assets/1cfd1d3e-59c2-4a47-b8ed-0f1b9415cbda" alt="FW Architecture" width="800">
+  <img src="https://github.com/user-attachments/assets/24211131-3822-4550-bf50-66789afae103" alt="FW Architecture" width="800">
   <br>Source: Image created by the author
 </p>
-<!-- ![FW Architecture](https://github.com/user-attachments//assets/1cfd1d3e-59c2-4a47-b8ed-0f1b9415cbda) -->
+<!-- ![FW Architecture](https://github.com/user-attachments/assets/24211131-3822-4550-bf50-66789afae103) -->
 
 ## Tests and Validation
 Untested rocket code is bad rocket code. So, I need a good way of testing this firmware to validate individual blocks and also the complete system working together. Of course, the biggest issue here is that I don't have multiple rockets to fire up and watch what happens. I am still not sure how to do this (if you have any ideas or advices, please tell me), but I fell like what I need is a combination of these 2 things:
