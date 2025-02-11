@@ -2,6 +2,8 @@
 
 This repo will be used to develop a basic system for rocketry avionics. Development is still in initial phase, as described below, and will most definetly go under many changes and tweeks as the project evolves.
 
+For updated project information, please refer to the [**General Requirements document**](Documentation/General_Requirements.pdf). The images and descriptions in this README may be out of date.
+
 # Rocketry Overview
 ## My Background
 I am a recently graduated Electronics Engineer and a space/rocketry enthusiast. For 3 years during graduation, I participated on a student rocketry team (at the time called Beyond Rocket Design, now Beyond Aerospace Department) where I helped to design and build model rockets for competitions like LASC, FBMF and so many others.
@@ -50,7 +52,7 @@ Just to be very clear, this example is absolutely, completely inaccurate and ove
 
 # Project Requirements and definitions
 
-For a more updated project information, please refer to the General Requirements document on Documentation folder. The images and descriptions in this section may be out of date.
+For updated project information, please refer to the [**General Requirements document**](Documentation/General_Requirements.pdf). The images and descriptions in this README may be out of date.
 
 ## Hardware
 The main objective with this project is to develop the device firmware, so hardware requirements are being defined based on components I have easy access to, mainly some off-the-shelf modules. If everything goes well after prototyping, I might review the project and design some proper hardware for it, but for now it is what it is.
