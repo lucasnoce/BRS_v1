@@ -23,14 +23,14 @@ Suborbital model rockets tend to (although, more often than desired, they don't)
 
 <p align="center">
   <br>Flight Stages
-  <br><img src="https://github.com/user-attachments/assets/89e4ac4f-ced1-4a4b-8422-af78ff70ac67" alt="Flight Stages (NASA)" width="500">
+  <br><img src="https://github.com/user-attachments/assets/89e4ac4f-ced1-4a4b-8422-af78ff70ac67" alt="Flight Stages (NASA)" width=50%>
   <br>Source: NASA's <a href="https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/flight-of-a-model-rocket/" target="_blank">Beginners Guide to Aeronautics</a>
 </p>
 <!-- ![rktflight](https://github.com/user-attachments/assets/89e4ac4f-ced1-4a4b-8422-af78ff70ac67) -->
 
 <p align="center">
   <br>Flight Stages: force analysis
-  <br><img src="https://github.com/user-attachments/assets/95ef7178-a636-40cd-b9dc-83a80c350e83" alt="Flight Stages Resultant Analysis" width="500">
+  <br><img src="https://github.com/user-attachments/assets/95ef7178-a636-40cd-b9dc-83a80c350e83" alt="Flight Stages Resultant Analysis" width=50%>
   <br>Source: Image created by the author
 </p>
 <!-- ![flight_stages](https://github.com/user-attachments/assets/95ef7178-a636-40cd-b9dc-83a80c350e83) -->
@@ -46,7 +46,7 @@ Consider that the avionics system will have some kind of IMU (Inertial Measureme
 
 <p align="center">
   <br>Flight Behavior: acceleration (red) and velocity (green)
-  <img src="https://github.com/user-attachments/assets/daaf0ec1-653c-4937-aa67-dafecf62db17" alt="Flight Behavior" width="500">
+  <br><img src="https://github.com/user-attachments/assets/daaf0ec1-653c-4937-aa67-dafecf62db17" alt="Flight Behavior" width=50%>
   <br>Source: Image created by the author
 </p>
 <!-- ![desmos-graph](https://github.com/user-attachments/assets/daaf0ec1-653c-4937-aa67-dafecf62db17) -->
@@ -67,7 +67,7 @@ First of all, I defined a [State Machine](Documentation/FW%20State%20Machine.png
 
 <p align="center">
   <br>FW State Machine
-  <img src="https://github.com/user-attachments/assets/7c7314bc-370f-4cdf-bbdf-a78096dcc1fc" alt="FW State Machine" width="800">
+  <br><img src="https://github.com/user-attachments/assets/7c7314bc-370f-4cdf-bbdf-a78096dcc1fc" alt="FW State Machine" width=100%>
   <br>Source: Image created by the author
 </p>
 <!-- ![FW State Machine](https://github.com/user-attachments/assets/7c7314bc-370f-4cdf-bbdf-a78096dcc1fc) -->
@@ -82,7 +82,7 @@ All of this is operation is illustrated in the following [Flowchart](Documentati
 
 <p align="center">
   <br>FW Flowchart
-  <img src="https://github.com/user-attachments/assets/43fa580d-00c4-4f8f-b531-e44d9dea57e4" alt="FW Flowchart" width="800">
+  <br><img src="https://github.com/user-attachments/assets/43fa580d-00c4-4f8f-b531-e44d9dea57e4" alt="FW Flowchart" width=100%>
   <br>Source: Image created by the author
 </p>
 <!-- ![FW Flowchart](https://github.com/user-attachments/assets/43fa580d-00c4-4f8f-b531-e44d9dea57e4) -->
@@ -91,7 +91,7 @@ Lastly, the system will be organized according to the following [Architecture](D
 
 <p align="center">
   <br>FW Architecture
-  <img src="https://github.com/user-attachments/assets/24211131-3822-4550-bf50-66789afae103" alt="FW Architecture" width="800">
+  <br><img src="https://github.com/user-attachments/assets/24211131-3822-4550-bf50-66789afae103" alt="FW Architecture" width=75%>
   <br>Source: Image created by the author
 </p>
 <!-- ![FW Architecture](https://github.com/user-attachments/assets/24211131-3822-4550-bf50-66789afae103) -->
