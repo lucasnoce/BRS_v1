@@ -2,7 +2,7 @@
 	(version 20231120)
 	(generator "eeschema")
 	(generator_version "8.0")
-	(uuid "ff74c247-a7eb-4ca0-9ca1-3ff9937a651e")
+	(uuid "855772bd-a7f2-40bc-ab44-f002e8fe7e70")
 	(paper "A4")
 	(title_block
 		(title "IO Expander/LEDs and Buzzer")
@@ -2716,7 +2716,7 @@
 	)
 	(text_box "I_{B} = I_{C}/β = 95/180 = 0.53 mA\n\nR_{B} = (V_{in} - V_{BE})/I_{B} = (3.3 - 0.7)/0.53 = 4.9 kΩ\n\n\nObs: (BC848) I_{C_max} = 100 mA"
 		(exclude_from_sim yes)
-		(at 62.23 171.45 0)
+		(at 62.23 173.99 0)
 		(size 44.45 11.43)
 		(stroke
 			(width 0)
