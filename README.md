@@ -2,6 +2,8 @@
 
 This repo will be used to develop a basic system for rocketry avionics. Development is still in initial phase, as described below, and will most definetly go under many changes and tweeks as the project evolves.
 
+For updated project information, please refer to the [**General Requirements document**](Documentation/General_Requirements.pdf). The images and descriptions in this README may be out of date.
+
 # Rocketry Overview
 ## My Background
 I am a recently graduated Electronics Engineer and a space/rocketry enthusiast. For 3 years during graduation, I participated on a student rocketry team (at the time called Beyond Rocket Design, now Beyond Aerospace Department) where I helped to design and build model rockets for competitions like LASC, FBMF and so many others.
@@ -20,19 +22,22 @@ Suborbital model rockets tend to (although, more often than desired, they don't)
 - Landing
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/89e4ac4f-ced1-4a4b-8422-af78ff70ac67" alt="Flight Stages (NASA)" width="500">
+  <br>Flight Stages
+  <br><img src="https://github.com/user-attachments/assets/89e4ac4f-ced1-4a4b-8422-af78ff70ac67" alt="Flight Stages (NASA)" width=50%>
   <br>Source: NASA's <a href="https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/flight-of-a-model-rocket/" target="_blank">Beginners Guide to Aeronautics</a>
 </p>
 <!-- ![rktflight](https://github.com/user-attachments/assets/89e4ac4f-ced1-4a4b-8422-af78ff70ac67) -->
 
 <p align="center">
-  <br><img src="https://github.com/user-attachments/assets/95ef7178-a636-40cd-b9dc-83a80c350e83" alt="Flight Stages Resultant Analysis" width="500">
+  <br>Flight Stages: force analysis
+  <br><img src="https://github.com/user-attachments/assets/95ef7178-a636-40cd-b9dc-83a80c350e83" alt="Flight Stages Resultant Analysis" width=50%>
+  <br>Source: Image created by the author
 </p>
 <!-- ![flight_stages](https://github.com/user-attachments/assets/95ef7178-a636-40cd-b9dc-83a80c350e83) -->
 
 Notice that the most important events that happen during a flight - as far as software development goes - are the transitions between stages:
 - Launch: transition from being still and moving, hopefully, upwards
-- MECO: transition from Powered to Unpowered Ascent
+- Main Engine Cut-Off (MECO): transition from Powered to Unpowered Ascent
 - Apogee: transition from moving upwards to downwards
 - Parachute: transition from descending almost on free fall to descending slowly
 - Landing: transition from descending to - we expect - softly stopping on the ground
@@ -40,7 +45,9 @@ Notice that the most important events that happen during a flight - as far as so
 Consider that the avionics system will have some kind of IMU (Inertial Measurement Unit), which basically tells us the instantaneous acceleration along its 3 axes. It will also feature a barometric sensor to measure the air pressure during flight. Now, let's imagine a rocket flying without any rotation, so that the Z-axis is always pointing up (this will never actually happen, but it's good for demonstration purposes). We can plot a graph with the approximate resultant acceleration (in red) and the corresponding velocity (in green) during this flight.
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/daaf0ec1-653c-4937-aa67-dafecf62db17" alt="Flight Behavior" width="500">
+  <br>Flight Behavior: acceleration (red) and velocity (green)
+  <br><img src="https://github.com/user-attachments/assets/daaf0ec1-653c-4937-aa67-dafecf62db17" alt="Flight Behavior" width=50%>
+  <br>Source: Image created by the author
 </p>
 <!-- ![desmos-graph](https://github.com/user-attachments/assets/daaf0ec1-653c-4937-aa67-dafecf62db17) -->
 
@@ -50,36 +57,44 @@ Just to be very clear, this example is absolutely, completely inaccurate and ove
 
 # Project Requirements and definitions
 
+For updated project information, please refer to the [**General Requirements document**](Documentation/General_Requirements.pdf). The images and descriptions in this README may be out of date.
+
 ## Hardware
 The main objective with this project is to develop the device firmware, so hardware requirements are being defined based on components I have easy access to, mainly some off-the-shelf modules. If everything goes well after prototyping, I might review the project and design some proper hardware for it, but for now it is what it is.
 
 ## Firmware
-First of all, I defined a state machine to control the system behavior based on rockect flight phases. For this project, I considered that the parachute shall be deployed on apogee detection in order to simplify things a little.
+First of all, I defined a [State Machine](Documentation/FW%20State%20Machine.png) to control the system behavior based on rockect flight phases. For this project, I considered that the parachute shall be deployed on apogee detection in order to simplify things a little. This machine will be managed by the Flight Control thread, shown in the [Architecture](Documentation/FW%20Architecture.png) structure below.
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/01065d75-7710-46db-901a-336ab3c081d6" alt="FW State Machine" width="800">
+  <br>FW State Machine
+  <br><img src="https://github.com/user-attachments/assets/7c7314bc-370f-4cdf-bbdf-a78096dcc1fc" alt="FW State Machine" width=100%>
+  <br>Source: Image created by the author
 </p>
-<!-- ![FW State Machine](https://github.com/user-attachments/assets/01065d75-7710-46db-901a-336ab3c081d6) -->
+<!-- ![FW State Machine](https://github.com/user-attachments/assets/7c7314bc-370f-4cdf-bbdf-a78096dcc1fc) -->
 
-Basically, the system is initialized on the first state and, if everything is working properly, moves to S1 where the operation mode is selected based on some system data stored in flash memory. There are only 2 modes: Data Log is used to read the stored data after a flight and Flight mode is where the magic happens.
+Basically, the system is initialized on the first state and, if everything is working properly, moves to S1 where the operation mode is selected based on a mechanical switch state. There are only 2 modes: UART mode is used to select secondary opModes (such as reading post-flight data and configuring the system) and Flight mode is where the magic happens.
 
-A flight only starts after the Remove Before Flight tag is removed. This has many reasons, in this case the most important being reliability, since this helps prevent a false flight start. After that, the system has 4 detection states, one for each flight stage transition. For example, S3 keeps trying to detect lift off stage by analyzing IMU and barometric sensor data or after a certain period of time has passed since the machine entered this state.
+A flight only starts after the Remove Before Flight tag is detected as removed. This has many reasons, in this case the most important being reliability, since this helps prevent a false flight start, as well as saving battery power. After that, the system has 4 detection states, one for each flight stage transition. For example, S3 keeps trying to detect lift off stage by analyzing IMU and barometric sensor data. Another example is S4, which tries to detect MECO by also analysing data from IMU and barometric sensor, or (for redundancy) can move forward after a certain timeout.
 
-Finally, after landing has been detected (and if the rocket is still a rocket) the system tries to backup the data to a secondary storage unit, which may be a microSD card or another flash chip (still to be defined).
+After landing has been detected (and if the rocket is still a rocket) the system tries to backup the data from internal flash to a secondary storage unit, which may be a microSD card or another flash chip (still to be defined). Finally, the system goes to S8, a state designed to facilitate rocket recovery (sometimes, they really like hiding underground) while also saving battery power. In this state, the system stays on a cycle of sleeping and waking up to beep/blink the buzzer/LEDs until the battery is critically low.
 
-All of this is operation is illustrated in the following flowchart (also under development).
+All of this is operation is illustrated in the following [Flowchart](Documentation/FW%20Flowchart.png) (also under development).
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/172260db-716e-4f8e-a2d3-e177a55b31c4" alt="FW Flowchart" width="800">
+  <br>FW Flowchart
+  <br><img src="https://github.com/user-attachments/assets/43fa580d-00c4-4f8f-b531-e44d9dea57e4" alt="FW Flowchart" width=100%>
+  <br>Source: Image created by the author
 </p>
-<!-- ![FW Flowchart](https://github.com/user-attachments/assets/172260db-716e-4f8e-a2d3-e177a55b31c4) -->
+<!-- ![FW Flowchart](https://github.com/user-attachments/assets/43fa580d-00c4-4f8f-b531-e44d9dea57e4) -->
 
-Lastly, the system will be roughly organized as follows (yes, you guessed it, this is also not the final version).
+Lastly, the system will be organized according to the following [Architecture](Documentation/FW%20Architecture.png) (yes, you guessed it, this is also not the final version).
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/b13627f9-4054-48e6-9eae-df8949527664" alt="FW Architecture" width="500">
+  <br>FW Architecture
+  <br><img src="https://github.com/user-attachments/assets/24211131-3822-4550-bf50-66789afae103" alt="FW Architecture" width=75%>
+  <br>Source: Image created by the author
 </p>
-<!-- ![FW Architecture](https://github.com/user-attachments/assets/b13627f9-4054-48e6-9eae-df8949527664) -->
+<!-- ![FW Architecture](https://github.com/user-attachments/assets/24211131-3822-4550-bf50-66789afae103) -->
 
 ## Tests and Validation
 Untested rocket code is bad rocket code. So, I need a good way of testing this firmware to validate individual blocks and also the complete system working together. Of course, the biggest issue here is that I don't have multiple rockets to fire up and watch what happens. I am still not sure how to do this (if you have any ideas or advices, please tell me), but I fell like what I need is a combination of these 2 things:
