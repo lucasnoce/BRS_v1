@@ -1,0 +1,203 @@
+(kicad_sch
+	(version 20231120)
+	(generator "eeschema")
+	(generator_version "8.0")
+	(uuid "393bc05c-046c-4428-9c5d-45ace103228b")
+	(paper "A4")
+	(lib_symbols)
+	(sheet
+		(at 88.9 106.68)
+		(size 38.1 38.1)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "24a2b9fb-1452-4e5a-bbf1-a4284cf22431")
+		(property "Sheetname" "Recovery_RBF"
+			(at 88.9 105.9684 0)
+			(effects
+				(font
+					(size 2.54 2.54)
+					(bold yes)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "Recovery_RBF.kicad_sch"
+			(at 88.9 145.3646 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "BRS_HW_v1"
+				(path "/aaddc341-7c9c-4d67-a2d2-1ee9911ff161/d17c71db-c1f3-469e-adf8-de6c2c2c95c1"
+					(page "9")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 134.62 106.68)
+		(size 38.1 38.1)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "35cdabb6-5042-41d0-b772-d4f17cea8942")
+		(property "Sheetname" "LEDs_Buzzer"
+			(at 134.62 105.9684 0)
+			(effects
+				(font
+					(size 2.54 2.54)
+					(bold yes)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "LEDs_Buzzer.kicad_sch"
+			(at 134.62 145.3646 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "BRS_HW_v1"
+				(path "/aaddc341-7c9c-4d67-a2d2-1ee9911ff161/d17c71db-c1f3-469e-adf8-de6c2c2c95c1"
+					(page "8")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 134.62 55.88)
+		(size 38.1 38.1)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "a45ce1e7-cf7b-4ef3-84f0-cabefa389d2a")
+		(property "Sheetname" "IMU"
+			(at 134.62 55.1684 0)
+			(effects
+				(font
+					(size 2.54 2.54)
+					(bold yes)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "IMU.kicad_sch"
+			(at 134.62 94.5646 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "BRS_HW_v1"
+				(path "/aaddc341-7c9c-4d67-a2d2-1ee9911ff161/d17c71db-c1f3-469e-adf8-de6c2c2c95c1"
+					(page "6")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 180.34 55.88)
+		(size 38.1 38.1)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "f460cc1c-93f2-4820-9e4c-7ef8cf69cdb2")
+		(property "Sheetname" "BAR"
+			(at 180.34 55.1684 0)
+			(effects
+				(font
+					(size 2.54 2.54)
+					(bold yes)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "BAR.kicad_sch"
+			(at 180.34 94.5646 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "BRS_HW_v1"
+				(path "/aaddc341-7c9c-4d67-a2d2-1ee9911ff161/d17c71db-c1f3-469e-adf8-de6c2c2c95c1"
+					(page "7")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 88.9 55.88)
+		(size 38.1 38.1)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "fe9dad9d-7335-4965-803f-66d749b7cbea")
+		(property "Sheetname" "Storage"
+			(at 88.9 55.1684 0)
+			(effects
+				(font
+					(size 2.54 2.54)
+					(bold yes)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "Storage.kicad_sch"
+			(at 88.9 94.5646 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "BRS_HW_v1"
+				(path "/aaddc341-7c9c-4d67-a2d2-1ee9911ff161/d17c71db-c1f3-469e-adf8-de6c2c2c95c1"
+					(page "5")
+				)
+			)
+		)
+	)
+)
