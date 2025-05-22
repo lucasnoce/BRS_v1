@@ -31,3 +31,6 @@ Release/
 *.suo
 *.user
 *.ldb
+
+# Ignore HW Backup files
+Hardware/BRS_HW_v1-backups
