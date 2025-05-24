@@ -9,18 +9,18 @@
  **************************************************************************************************
  * @copyright
  * MIT License
- * 
+ *
  * Copyright (c) 2025 Lucas Noce
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without
  * restriction, including without limitation the rights to use, copy, modify, merge, publish,
  * distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all copies or
  * substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
  * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
@@ -34,12 +34,13 @@
  */
 
 
+#include "../../Modules/io_expander/io_expander.h"
+
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "Layers/Utilities/brs_errno.h"
-#include "Layers/BSP/bsp_i2c.h"
-#include "io_expander.h"
+#include "../../Utilities/brs_errno.h"
+#include "../../BSP/bsp_i2c.h"
 
 
 /* Definitions ================================================================================= */
@@ -100,26 +101,26 @@ static inline int8_t _io_expander_i2c_write( uint8_t reg, uint8_t *p_data );
 
 int8_t io_expander_init( void ){
   int8_t ret = BRS_RET_OK;
-  
+
   if( io_expander_driver_init )
     return BRS_RET_OK;
 
   ret = io_expander_config( IO_EXPANDER_ALL_GPIOS,
                             ~( IO_EXPANDER_REG_VAL_DIRECTION_INPUT - 1 ),
                             ~( IO_EXPANDER_REG_VAL_POLARITY_NORMAL - 1 ) );  // ~0 = 0xFF and ~(-1) = 0x00
-  
+
   if( ret == 0 )
     io_expander_driver_init = true;
-  
+
   return ret;
 }
 
 int8_t io_expander_config( uint8_t gpio, uint8_t direction, uint8_t polarity ){
   int8_t ret = BRS_RET_OK;
-  
+
   if( !io_expander_driver_init )
     return BRS_ERR_NOT_INIT;
-  
+
   if( gpio > IO_EXPANDER_ALL_GPIOS ){
     return BRS_ERR_INVALID_PARAM;
   }
@@ -134,16 +135,16 @@ int8_t io_expander_config( uint8_t gpio, uint8_t direction, uint8_t polarity ){
 
   ret += _io_expander_i2c_write( IO_EXPANDER_CMD_REG_DIRECTION, &io_expander_data.direction );
   ret += _io_expander_i2c_write( IO_EXPANDER_CMD_REG_POLARITY, &io_expander_data.polarity );
-  
+
   return ret;
 }
 
 int8_t io_expander_write( uint8_t gpio, uint8_t value ){
   int8_t ret = BRS_RET_OK;
-  
+
   if( !io_expander_driver_init )
     return BRS_ERR_NOT_INIT;
-  
+
   if( gpio > IO_EXPANDER_ALL_GPIOS ){
     return BRS_ERR_INVALID_PARAM;
   }
@@ -153,16 +154,16 @@ int8_t io_expander_write( uint8_t gpio, uint8_t value ){
   else{
     _io_expander_set_data_bit( &io_expander_data.output, ( value & 0x01 ), gpio );
   }
-  
+
   ret = _io_expander_i2c_write( IO_EXPANDER_CMD_REG_DIRECTION, &io_expander_data.output );
-  
+
   return ret;
 }
 
 /* Local Functions Implementation ============================================================== */
 
 static inline void _io_expander_set_data_bit( uint8_t *p_data, uint8_t val, uint8_t bit ){
-  *p_data = ( *p_data & ~( 1 << bit ) | ( ( val & 0x01 ) << bit ) );
+  *p_data = ( ( *p_data & ~( 1 << bit ) ) | ( ( val & 0x01 ) << bit ) );
 }
 
 static inline int8_t _io_expander_i2c_write( uint8_t reg, uint8_t *p_data ){
