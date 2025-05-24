@@ -9,18 +9,18 @@
  **************************************************************************************************
  * @copyright
  * MIT License
- * 
+ *
  * Copyright (c) 2025 Lucas Noce
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without
  * restriction, including without limitation the rights to use, copy, modify, merge, publish,
  * distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all copies or
  * substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
  * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
@@ -36,11 +36,12 @@
 
 /* Includes ==================================================================================== */
 
+#include "../BSP/bsp_i2c.h"
+
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "Layers/Utilities/brs_errno.h"
-#include "bsp_i2c.h"
+#include "../Utilities/brs_errno.h"
 
 /* Definitions ================================================================================= */
 
@@ -69,7 +70,7 @@ static bool bsp_i2c_init_flag = false;
 int8_t bsp_i2c_init( I2C_HandleTypeDef *hi2c ){
   if( hi2c == NULL )
     return BRS_ERR_NULL_POINTER;
-  
+
   if( bsp_i2c_init_flag )
     return BRS_RET_OK;
 
@@ -84,7 +85,7 @@ int8_t bsp_i2c_write_reg( uint8_t addr, uint8_t reg, uint8_t *p_data ){
 
   if( bsp_hi2c == NULL )
     return BRS_ERR_NULL_POINTER;
-  
+
   if( !bsp_i2c_init_flag )
     return BRS_ERR_NOT_INIT;
 
@@ -99,7 +100,7 @@ int8_t bsp_i2c_read_reg( uint8_t addr, uint8_t reg, uint8_t *p_data ){
 
   if( bsp_hi2c == NULL )
     return BRS_ERR_NULL_POINTER;
-  
+
   if( !bsp_i2c_init_flag )
     return BRS_ERR_NOT_INIT;
 

@@ -57,6 +57,26 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define ADC_BAT_Pin GPIO_PIN_0
+#define ADC_BAT_GPIO_Port GPIOA
+#define BRS_RBF_Pin GPIO_PIN_1
+#define BRS_RBF_GPIO_Port GPIOA
+#define BRS_RCV_Pin GPIO_PIN_2
+#define BRS_RCV_GPIO_Port GPIOA
+#define IMU_INT_Pin GPIO_PIN_3
+#define IMU_INT_GPIO_Port GPIOA
+#define BOOT1_Pin GPIO_PIN_2
+#define BOOT1_GPIO_Port GPIOB
+#define SPI2_NSS1_Pin GPIO_PIN_12
+#define SPI2_NSS1_GPIO_Port GPIOB
+#define SPI2_NSS0_Pin GPIO_PIN_13
+#define SPI2_NSS0_GPIO_Port GPIOB
+#define BUZZER_Pin GPIO_PIN_4
+#define BUZZER_GPIO_Port GPIOB
+#define SENS_PWR_Pin GPIO_PIN_8
+#define SENS_PWR_GPIO_Port GPIOB
+#define BOARD_PWR_Pin GPIO_PIN_9
+#define BOARD_PWR_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 
