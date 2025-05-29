@@ -36,7 +36,7 @@
 
 /* Includes ==================================================================================== */
 
-#include "../BSP/bsp_i2c.h"
+#include "bsp_i2c.h"
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -68,16 +68,16 @@ static bool bsp_i2c_init_flag = false;
 /* Global Functions Implementation ============================================================= */
 
 int8_t bsp_i2c_init( I2C_HandleTypeDef *hi2c ){
-  if( hi2c == NULL )
-    return BRS_ERR_NULL_POINTER;
+	if( hi2c == NULL )
+		return BRS_ERR_NULL_POINTER;
 
-  if( bsp_i2c_init_flag )
-    return BRS_RET_OK;
+	if( bsp_i2c_init_flag )
+		return BRS_RET_OK;
 
-  bsp_hi2c = hi2c;
-  bsp_i2c_init_flag = true;
+	bsp_hi2c = hi2c;
+	bsp_i2c_init_flag = true;
 
-  return BRS_RET_OK;
+	return BRS_RET_OK;
 }
 
 int8_t bsp_i2c_write_reg( uint8_t addr, uint8_t reg, uint8_t *p_data ){

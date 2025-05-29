@@ -70,6 +70,9 @@
 #define IO_EXPANDER_REG_VAL_POLARITY_DEFAULT    TCA9534A_REG_VAL_POLARITY_DEFAULT
 #define IO_EXPANDER_REG_VAL_DIRECTION_DEFAULT   TCA9534A_REG_VAL_CONFIG_DEFAULT
 
+
+#define IO_EXPANDER_MOD_ALL(x)					( x ? 0xFF : 0x00 )
+
 /* Enums ======================================================================================= */
 
 /*!

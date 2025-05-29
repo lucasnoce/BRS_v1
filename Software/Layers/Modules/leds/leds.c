@@ -74,6 +74,8 @@ static LEDS_DATA_T leds_data;
 /* Global Functions Implementation ============================================================= */
 
 int8_t leds_init( TIM_HandleTypeDef *htim ){
+	int8_t ret = BRS_RET_OK;
+
 	if( htim == NULL )
 		return BRS_ERR_NULL_POINTER;
 
@@ -87,11 +89,11 @@ int8_t leds_init( TIM_HandleTypeDef *htim ){
 	leds_data.blink = 0;
 	leds_data.blink_spd = 0;
 
-	io_expander_config( IO_EXPANDER_ALL_GPIOS,
-						IO_EXPANDER_REG_VAL_DIRECTION_OUTPUT,
-						IO_EXPANDER_REG_VAL_POLARITY_NORMAL );
+	ret = io_expander_config( IO_EXPANDER_ALL_GPIOS,
+			IO_EXPANDER_MOD_ALL( IO_EXPANDER_REG_VAL_DIRECTION_OUTPUT ),
+			IO_EXPANDER_MOD_ALL( IO_EXPANDER_REG_VAL_POLARITY_NORMAL ) );
 
-	return BRS_RET_OK;
+	return ret;
 }
 
 int8_t leds_on( uint8_t led ){
@@ -100,7 +102,7 @@ int8_t leds_on( uint8_t led ){
 	if( !leds_init_flag )
 		return BRS_ERR_NOT_INIT;
 
-	if( led > IO_EXPANDER_ALL_GPIOS ){
+	if( led > LEDS_ALL_LEDS ){
 		return BRS_ERR_INVALID_PARAM;
 	}
 	else if( led < LEDS_ALL_LEDS ){
@@ -111,7 +113,7 @@ int8_t leds_on( uint8_t led ){
 	else{
 		leds_data.state = 0xFF;
 		leds_data.blink = 0x00;
-		ret = io_expander_write( IO_EXPANDER_ALL_GPIOS, 0xFF );
+		ret = io_expander_write( IO_EXPANDER_ALL_GPIOS, leds_data.state );
 	}
 
 	return ret;
@@ -123,10 +125,11 @@ int8_t leds_off( uint8_t led ){
 	if( !leds_init_flag )
 		return BRS_ERR_NOT_INIT;
 
-	if( led > IO_EXPANDER_ALL_GPIOS ){
+	if( led > LEDS_ALL_LEDS ){
 		return BRS_ERR_INVALID_PARAM;
 	}
 	else if( led < LEDS_ALL_LEDS ){
+		//HAL_TIM_OC_Stop_IT( p_leds_htim, leds_data[led].channel );  // todo
 		leds_data.state &= ~( 1 << led );
 		leds_data.blink &= ~( 1 << led );
 		ret = io_expander_write( led, IO_EXPANDER_REG_VAL_OUTPUT_LOW );
@@ -134,7 +137,7 @@ int8_t leds_off( uint8_t led ){
 	else{
 		leds_data.state = 0x00;
 		leds_data.blink = 0x00;
-		ret = io_expander_write( IO_EXPANDER_ALL_GPIOS, 0x00 );
+		ret = io_expander_write( IO_EXPANDER_ALL_GPIOS, leds_data.state );
 	}
 
 	return ret;
@@ -146,7 +149,7 @@ int8_t leds_toggle( uint8_t led ){
 	if( !leds_init_flag )
 		return BRS_ERR_NOT_INIT;
 
-	if( led > IO_EXPANDER_ALL_GPIOS ){
+	if( led > LEDS_ALL_LEDS ){
 		return BRS_ERR_INVALID_PARAM;
 	}
 	else if( led < LEDS_ALL_LEDS ){
@@ -163,7 +166,29 @@ int8_t leds_toggle( uint8_t led ){
 	return ret;
 }
 
-int8_t leds_blink( uint8_t led, bool fast );
+int8_t leds_blink( uint8_t led, bool fast ){
+	int8_t ret = BRS_RET_OK;
+
+	if( !leds_init_flag )
+		return BRS_ERR_NOT_INIT;
+
+	if( led > LEDS_ALL_LEDS ){
+		return BRS_ERR_INVALID_PARAM;
+	}
+	else if( led < LEDS_ALL_LEDS ){
+		//HAL_TIM_OC_Start_IT( p_leds_htim, leds_data[i].channel );  // todo
+		leds_data.state ^= ( 1 << led );
+		leds_data.blink &= ~( 1 << led );
+		ret = io_expander_write( led, ( ( leds_data.state >> led ) & 0x01 ) );
+	}
+	else{
+		leds_data.state ^= 0xFF;
+		leds_data.blink = 0x00;
+		ret = io_expander_write( IO_EXPANDER_ALL_GPIOS, leds_data.state );
+	}
+
+	return ret;
+}
 
 /* Local Functions Implementation ============================================================== */
 
