@@ -47,30 +47,39 @@
 
 /* Definitions ================================================================================= */
 
+#define LEDS_BLINK_SINGLE_T_TOTAL_MS	(uint16_t) 200
+#define LEDS_BLINK_SLOW_T_TOTAL_MS		(uint16_t) 5000
+#define LEDS_BLINK_NORMAL_T_TOTAL_MS	(uint16_t) 1000
+#define LEDS_BLINK_FAST_T_TOTAL_MS		(uint16_t) 200
 
+#define LEDS_BLINK_SINGLE_T_ON_MS		(uint16_t) 200
+#define LEDS_BLINK_SLOW_T_ON_MS			(uint16_t) 200
+#define LEDS_BLINK_NORMAL_T_ON_MS		(uint16_t) 200
+#define LEDS_BLINK_FAST_T_ON_MS			(uint16_t) 100
 
 /* Enums ======================================================================================= */
 
-typedef enum{
-	LEDS_TIM_CHANNEL_0_LED_0 = 0,
-	LEDS_TIM_CHANNEL_1_LED_1,
-	LEDS_TIM_CHANNEL_2_LED_2,
-	LEDS_TIM_CHANNEL_3_LED_3,
-	LEDS_TIM_CHANNEL_ALL,
-} LEDS_TIM_CHANNEL_E;
+
 
 /* Typedefs ==================================================================================== */
 
 typedef struct LEDS_DATA_TAG{
 	uint8_t state;
-	uint8_t blink;
-	uint8_t blink_spd;
+	uint8_t blink_en;
+	uint8_t blink_speed[BSP_TIMER_CHANNEL_COUNT];
 } LEDS_DATA_T;
 
 /* Static Variables ============================================================================ */
 
 static bool leds_init_flag = false;
 static LEDS_DATA_T leds_data;
+
+static uint16_t leds_blink_period[4][2] = {
+	{ LEDS_BLINK_SINGLE_T_TOTAL_MS,	LEDS_BLINK_SINGLE_T_ON_MS },
+	{ LEDS_BLINK_SLOW_T_TOTAL_MS,	LEDS_BLINK_SLOW_T_ON_MS   },
+	{ LEDS_BLINK_NORMAL_T_TOTAL_MS,	LEDS_BLINK_NORMAL_T_ON_MS },
+	{ LEDS_BLINK_FAST_T_TOTAL_MS,	LEDS_BLINK_FAST_T_ON_MS   }
+};
 
 /* Local Function Prototypes =================================================================== */
 
@@ -110,6 +119,35 @@ static inline int8_t _leds_start_tim_oc_it( uint8_t led ){
 	return ret;
 }
 
+static inline int8_t _leds_set_initial_tim_period( uint8_t led, uint8_t speed ){
+	int8_t ret = BRS_RET_OK;
+
+	switch( speed ){
+		case LEDS_BLINK_SPEED_SINGLE:
+			ret = bsp_tim_set_it_period( BSP_TIMER_ID_LEDS, led, LEDS_BLINK_SLOW_T_ON_MS );
+			break;
+
+		case LEDS_BLINK_SPEED_SLOW:
+			ret = bsp_tim_set_it_period( BSP_TIMER_ID_LEDS, led, LEDS_BLINK_SLOW_T_ON_MS );
+			break;
+
+		case LEDS_BLINK_SPEED_NORMAL:
+			ret = bsp_tim_set_it_period( BSP_TIMER_ID_LEDS, led, LEDS_BLINK_NORMAL_T_ON_MS );
+			break;
+
+		case LEDS_BLINK_SPEED_FAST:
+			ret = bsp_tim_set_it_period( BSP_TIMER_ID_LEDS, led, LEDS_BLINK_FAST_T_ON_MS );
+			break;
+
+		case LEDS_BLINK_SPEED_ALL:
+		default:
+			ret = BRS_ERR_INVALID_PARAM;
+			break;
+	}
+
+	return ret;
+}
+
 /* Global Functions Implementation ============================================================= */
 
 int8_t leds_init( void ){
@@ -119,8 +157,11 @@ int8_t leds_init( void ){
 		return BRS_RET_OK;
 
 	leds_data.state = 0;
-	leds_data.blink = 0;
-	leds_data.blink_spd = 0;
+	leds_data.blink_en = 0;
+
+	for( uint8_t i=0; i<BSP_TIMER_CHANNEL_COUNT; i++ ){
+		leds_data.blink_speed[i] = 0;
+	}
 
 	ret = io_expander_config( IO_EXPANDER_ALL_GPIOS,
 			IO_EXPANDER_MOD_ALL( IO_EXPANDER_REG_VAL_DIRECTION_OUTPUT ),
@@ -143,12 +184,12 @@ int8_t leds_on( uint8_t led ){
 	}
 	else if( led < LEDS_ALL_LEDS ){
 		leds_data.state |= ( 1 << led );
-		leds_data.blink &= ~( 1 << led );
+		leds_data.blink_en &= ~( 1 << led );
 		ret = io_expander_write( led, IO_EXPANDER_REG_VAL_OUTPUT_HIGH );
 	}
 	else{
 		leds_data.state = 0xFF;
-		leds_data.blink = 0x00;
+		leds_data.blink_en = 0x00;
 		ret = io_expander_write( IO_EXPANDER_ALL_GPIOS, leds_data.state );
 	}
 
@@ -166,13 +207,13 @@ int8_t leds_off( uint8_t led ){
 	}
 	else if( led < LEDS_ALL_LEDS ){
 		leds_data.state &= ~( 1 << led );
-		leds_data.blink &= ~( 1 << led );
+		leds_data.blink_en &= ~( 1 << led );
 		ret = io_expander_write( led, IO_EXPANDER_REG_VAL_OUTPUT_LOW );
 		ret += _leds_stop_tim_oc_it( led );
 	}
 	else{
 		leds_data.state = 0x00;
-		leds_data.blink = 0x00;
+		leds_data.blink_en = 0x00;
 		ret = io_expander_write( IO_EXPANDER_ALL_GPIOS, leds_data.state );
 		ret += _leds_stop_tim_oc_it( LEDS_TIM_CHANNEL_ALL );
 	}
@@ -191,41 +232,65 @@ int8_t leds_toggle( uint8_t led ){
 	}
 	else if( led < LEDS_ALL_LEDS ){
 		leds_data.state ^= ( 1 << led );
-		leds_data.blink &= ~( 1 << led );
+		leds_data.blink_en &= ~( 1 << led );
 		ret = io_expander_write( led, ( ( leds_data.state >> led ) & 0x01 ) );
 	}
 	else{
 		leds_data.state ^= 0xFF;
-		leds_data.blink = 0x00;
+		leds_data.blink_en = 0x00;
 		ret = io_expander_write( IO_EXPANDER_ALL_GPIOS, leds_data.state );
 	}
 
 	return ret;
 }
 
-int8_t leds_blink( uint8_t led, bool fast ){
+int8_t leds_blink( uint8_t led, uint8_t speed ){
 	int8_t ret = BRS_RET_OK;
 
 	if( !leds_init_flag )
 		return BRS_ERR_NOT_INIT;
 
-	if( led > LEDS_ALL_LEDS ){
+	if( led > LEDS_ALL_LEDS || ( led >= LEDS_LED_4 && led <= LEDS_LED_7 ) ||
+		speed >= LEDS_BLINK_SPEED_ALL ){
 		return BRS_ERR_INVALID_PARAM;
 	}
 	else if( led < LEDS_ALL_LEDS ){
 		leds_data.state ^= ( 1 << led );
-		leds_data.blink &= ~( 1 << led );
+		leds_data.blink_en &= ~( 1 << led );
+		leds_data.blink_speed[led] = speed;
 		ret = io_expander_write( led, ( ( leds_data.state >> led ) & 0x01 ) );
+		ret += _leds_set_initial_tim_period( led, speed );
 		ret += _leds_start_tim_oc_it( led );
 	}
 	else{
 		leds_data.state ^= 0xFF;
-		leds_data.blink = 0x00;
+		leds_data.blink_en = 0x00;
 		ret = io_expander_write( IO_EXPANDER_ALL_GPIOS, leds_data.state );
+
+		for( uint8_t i=0; i<BSP_TIMER_CHANNEL_COUNT; i++ ){
+			leds_data.blink_speed[i] = speed;
+			ret += _leds_set_initial_tim_period( i, speed );
+		}
+
 		ret += _leds_start_tim_oc_it( LEDS_TIM_CHANNEL_ALL );
 	}
 
 	return ret;
+}
+
+void leds_tim_callback_handler( uint8_t led ){
+	leds_data.state ^= ( 1 << led );
+	io_expander_write( led, ( ( leds_data.state >> led ) & 0x01 ) );
+
+	if( leds_data.blink_speed[led] == LEDS_BLINK_SPEED_SINGLE ){
+		bsp_tim_oc_stop_it( BSP_TIMER_ID_LEDS, led );
+	}
+	else{
+		bsp_tim_set_it_period( BSP_TIMER_ID_LEDS, led,
+				leds_blink_period[leds_data.blink_speed[led]][( leds_data.state >> led ) & 0x01] );
+	}
+
+	return;
 }
 
 /* Local Functions Implementation ============================================================== */

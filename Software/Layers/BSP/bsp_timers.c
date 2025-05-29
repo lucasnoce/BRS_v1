@@ -216,6 +216,7 @@ int8_t bsp_tim_set_it_period( uint8_t timer_id, uint8_t channel_num, uint32_t pe
 
 	return ret;
 }
+
 /* Local Functions Implementation ============================================================== */
 
 
