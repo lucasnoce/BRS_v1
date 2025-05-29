@@ -22,7 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "../../Layers/Modules/io_expander/io_expander.h"
+#include "../../Layers/BSP/bsp_brs.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -115,6 +115,21 @@ int main(void)
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
 
+  BSP_BRS_PERIPH_HANDLES_T bsp_ph = { 0 };
+  bsp_ph.hadc[0] = &hadc1;
+
+  bsp_ph.hi2c[0] = &hi2c1;
+
+  bsp_ph.hspi[0] = &hspi1;
+  bsp_ph.hspi[1] = &hspi2;
+
+  bsp_ph.htim[0] = &htim1;
+  bsp_ph.htim[1] = &htim2;
+
+  bsp_ph.huart[0] = &huart1;
+
+  bsp_brs_init( &bsp_ph );
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -124,7 +139,6 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  io_expander_init();
   }
   /* USER CODE END 3 */
 }
