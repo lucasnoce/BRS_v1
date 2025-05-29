@@ -44,5 +44,8 @@
 #define BRS_ERR_NULL_POINTER   -1
 #define BRS_ERR_INVALID_PARAM  -2
 #define BRS_ERR_NOT_INIT       -3
+#define BRS_ERR_BUSY	       -4
+#define BRS_ERR_TIMEOUT	       -5
+#define BRS_ERR_GENERIC	       -6
 
 #endif /* __BRS_ERRNO_H__ */

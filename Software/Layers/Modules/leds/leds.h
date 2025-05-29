@@ -1,10 +1,10 @@
 /**
  **************************************************************************************************
- * @file           : bsp_i2c.c
- * @brief          : <Short description of the file>
+ * @file           : <leds.h>
+ * @brief          : <brief>
  **************************************************************************************************
  * @author         : Lucas Noce
- * @date           : 2025/02/06
+ * @date           : 2025/mm/dd
  * @version        : v1.0
  **************************************************************************************************
  * @copyright
@@ -34,22 +34,55 @@
  */
 
 
-/* Includes ==================================================================================== */
+#ifndef __LEDS_H__
+#define __LEDS_H__
 
-#include "bsp_i2c.h"
+/* Includes ==================================================================================== */
 
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "../Utilities/brs_errno.h"
-
 /* Definitions ================================================================================= */
 
-#define BSP_I2C_STD_TIMEOUT 100
+
 
 /* Enums ======================================================================================= */
 
+/*!
+  @brief	Enumerates all the available LEDs.
 
+  @note 	A total of 8 LEDs are used together with the IO Expander.
+  @note 	The LED number (LEDn) directly corresponds to the IO Expander GPIO number.
+  @note 	The State Machine is encoded as 4 bit binary number (e.g. state 5 is 0b0101).
+  @note 	The LEDs related to State Machine indication will not have access to blink functions.
+*/
+typedef enum{
+	LEDS_LED_0 = 0,	// DEBUG: For general use
+	LEDS_LED_1,		// DEBUG: For general use
+	LEDS_LED_2,		// RCV: Used to indicate vehicle Recovery
+	LEDS_LED_3,		// LOW_BAT: Used to indicate BRS low battery
+	LEDS_LED_4,		// SM0: State Machine state, bit 0
+	LEDS_LED_5,		// SM1: State Machine state, bit 1
+	LEDS_LED_6,		// SM2: State Machine state, bit 2
+	LEDS_LED_7,		// SM3: State Machine state, bit 3
+	LEDS_ALL_LEDS,
+} LEDS_LED_E;
+
+typedef enum{
+	LEDS_TIM_CHANNEL_1_LED_0 = 0,
+	LEDS_TIM_CHANNEL_2_LED_1,
+	LEDS_TIM_CHANNEL_3_LED_2,
+	LEDS_TIM_CHANNEL_4_LED_3,
+	LEDS_TIM_CHANNEL_ALL,
+} LEDS_TIM_CHANNEL_E;
+
+typedef enum{
+	LEDS_BLINK_SPEED_SINGLE = 0,
+	LEDS_BLINK_SPEED_SLOW,
+	LEDS_BLINK_SPEED_NORMAL,
+	LEDS_BLINK_SPEED_FAST,
+	LEDS_BLINK_SPEED_ALL,
+} LEDS_BLINK_SPEED_E;
 
 /* Typedefs ==================================================================================== */
 
@@ -57,59 +90,15 @@
 
 /* Static Variables ============================================================================ */
 
-static I2C_HandleTypeDef *bsp_hi2c = NULL;
-
-static bool bsp_i2c_init_flag = false;
-
-/* Local Function Prototypes =================================================================== */
 
 
+/* Global Functions ============================================================================ */
 
-/* Global Functions Implementation ============================================================= */
+int8_t leds_init( void );
+int8_t leds_on( uint8_t led );
+int8_t leds_off( uint8_t led );
+int8_t leds_toggle( uint8_t led );
+int8_t leds_blink( uint8_t led, uint8_t speed );
+void leds_tim_callback_handler( uint8_t led );
 
-int8_t bsp_i2c_init( I2C_HandleTypeDef *hi2c ){
-	if( hi2c == NULL )
-		return BRS_ERR_NULL_POINTER;
-
-	if( bsp_i2c_init_flag )
-		return BRS_RET_OK;
-
-	bsp_hi2c = hi2c;
-	bsp_i2c_init_flag = true;
-
-	return BRS_RET_OK;
-}
-
-int8_t bsp_i2c_write_reg( uint8_t addr, uint8_t reg, uint8_t *p_data ){
-  int8_t ret = BRS_RET_OK;
-
-  if( bsp_hi2c == NULL )
-    return BRS_ERR_NULL_POINTER;
-
-  if( !bsp_i2c_init_flag )
-    return BRS_ERR_NOT_INIT;
-
-  ret = HAL_I2C_Mem_Write( bsp_hi2c, addr, reg, I2C_MEMADD_SIZE_8BIT,
-                           p_data, sizeof(uint8_t), BSP_I2C_STD_TIMEOUT );
-
-  return ret;
-}
-
-int8_t bsp_i2c_read_reg( uint8_t addr, uint8_t reg, uint8_t *p_data ){
-  int8_t ret = BRS_RET_OK;
-
-  if( bsp_hi2c == NULL )
-    return BRS_ERR_NULL_POINTER;
-
-  if( !bsp_i2c_init_flag )
-    return BRS_ERR_NOT_INIT;
-
-  ret = HAL_I2C_Mem_Read( bsp_hi2c, addr, reg, I2C_MEMADD_SIZE_8BIT,
-                           p_data, sizeof(uint8_t), BSP_I2C_STD_TIMEOUT );
-
-  return ret;
-}
-
-/* Local Functions Implementation ============================================================== */
-
-
+#endif /* __LEDS_H__ */

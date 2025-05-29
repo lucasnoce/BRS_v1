@@ -1,10 +1,10 @@
 /**
  **************************************************************************************************
- * @file           : bsp_i2c.c
+ * @file           : bsp_hal_callbacks.c
  * @brief          : <Short description of the file>
  **************************************************************************************************
  * @author         : Lucas Noce
- * @date           : 2025/02/06
+ * @date           : 2025/05/29
  * @version        : v1.0
  **************************************************************************************************
  * @copyright
@@ -29,23 +29,25 @@
  **************************************************************************************************
  * @note
  * - STM32 Series: STM32F411xx (Update as needed)
- * - Toolchain: STM32CubeMX / VS Code + STM32 VS Code Extension + CMake
+ * - Toolchain: STM32CubeMX / STM32CubeIDE
  **************************************************************************************************
  */
 
 
 /* Includes ==================================================================================== */
 
-#include "bsp_i2c.h"
+#include "bsp_hal_callbacks.h"
+#include "stm32f4xx_hal.h"
 
 #include <stdint.h>
 #include <stdbool.h>
 
 #include "../Utilities/brs_errno.h"
+#include "../Modules/leds/leds.h"
 
 /* Definitions ================================================================================= */
 
-#define BSP_I2C_STD_TIMEOUT 100
+
 
 /* Enums ======================================================================================= */
 
@@ -57,9 +59,7 @@
 
 /* Static Variables ============================================================================ */
 
-static I2C_HandleTypeDef *bsp_hi2c = NULL;
 
-static bool bsp_i2c_init_flag = false;
 
 /* Local Function Prototypes =================================================================== */
 
@@ -67,47 +67,39 @@ static bool bsp_i2c_init_flag = false;
 
 /* Global Functions Implementation ============================================================= */
 
-int8_t bsp_i2c_init( I2C_HandleTypeDef *hi2c ){
-	if( hi2c == NULL )
-		return BRS_ERR_NULL_POINTER;
+void HAL_TIM_OC_DelayElapsedCallback( TIM_HandleTypeDef *htim ){
+	uint8_t led = 0;
 
-	if( bsp_i2c_init_flag )
-		return BRS_RET_OK;
+//	if( htim->Instance == TIM1 ){
+//		return;
+//	}
+	if( htim->Instance == TIM2 ){  // LEDs
+		switch( htim->Channel ){
+			case HAL_TIM_ACTIVE_CHANNEL_1:
+				led = LEDS_TIM_CHANNEL_1_LED_0;
+				break;
 
-	bsp_hi2c = hi2c;
-	bsp_i2c_init_flag = true;
+			case HAL_TIM_ACTIVE_CHANNEL_2:
+				led = LEDS_TIM_CHANNEL_2_LED_1;
+				break;
 
-	return BRS_RET_OK;
-}
+			case HAL_TIM_ACTIVE_CHANNEL_3:
+				led = LEDS_TIM_CHANNEL_3_LED_2;
+				break;
 
-int8_t bsp_i2c_write_reg( uint8_t addr, uint8_t reg, uint8_t *p_data ){
-  int8_t ret = BRS_RET_OK;
+			case HAL_TIM_ACTIVE_CHANNEL_4:
+				led = LEDS_TIM_CHANNEL_4_LED_3;
+				break;
 
-  if( bsp_hi2c == NULL )
-    return BRS_ERR_NULL_POINTER;
+			default:
+				led = LEDS_TIM_CHANNEL_ALL;
+				break;
+		}
 
-  if( !bsp_i2c_init_flag )
-    return BRS_ERR_NOT_INIT;
+		leds_tim_callback_handler( led );
+	}
 
-  ret = HAL_I2C_Mem_Write( bsp_hi2c, addr, reg, I2C_MEMADD_SIZE_8BIT,
-                           p_data, sizeof(uint8_t), BSP_I2C_STD_TIMEOUT );
-
-  return ret;
-}
-
-int8_t bsp_i2c_read_reg( uint8_t addr, uint8_t reg, uint8_t *p_data ){
-  int8_t ret = BRS_RET_OK;
-
-  if( bsp_hi2c == NULL )
-    return BRS_ERR_NULL_POINTER;
-
-  if( !bsp_i2c_init_flag )
-    return BRS_ERR_NOT_INIT;
-
-  ret = HAL_I2C_Mem_Read( bsp_hi2c, addr, reg, I2C_MEMADD_SIZE_8BIT,
-                           p_data, sizeof(uint8_t), BSP_I2C_STD_TIMEOUT );
-
-  return ret;
+    return;
 }
 
 /* Local Functions Implementation ============================================================== */

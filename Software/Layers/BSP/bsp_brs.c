@@ -1,10 +1,10 @@
 /**
  **************************************************************************************************
- * @file           : bsp_i2c.c
+ * @file           : bsp_brs.c
  * @brief          : <Short description of the file>
  **************************************************************************************************
  * @author         : Lucas Noce
- * @date           : 2025/02/06
+ * @date           : 2025/05/29
  * @version        : v1.0
  **************************************************************************************************
  * @copyright
@@ -29,14 +29,14 @@
  **************************************************************************************************
  * @note
  * - STM32 Series: STM32F411xx (Update as needed)
- * - Toolchain: STM32CubeMX / VS Code + STM32 VS Code Extension + CMake
+ * - Toolchain: STM32CubeMX / STM32CubeIDE
  **************************************************************************************************
  */
 
 
 /* Includes ==================================================================================== */
 
-#include "bsp_i2c.h"
+#include "bsp_brs.h"
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -45,7 +45,7 @@
 
 /* Definitions ================================================================================= */
 
-#define BSP_I2C_STD_TIMEOUT 100
+
 
 /* Enums ======================================================================================= */
 
@@ -57,9 +57,9 @@
 
 /* Static Variables ============================================================================ */
 
-static I2C_HandleTypeDef *bsp_hi2c = NULL;
+static BSP_BRS_PERIPH_HANDLES_T bsp_brs_ph = { 0 };
 
-static bool bsp_i2c_init_flag = false;
+static bool bsp_brs_init_flag = false;
 
 /* Local Function Prototypes =================================================================== */
 
@@ -67,47 +67,94 @@ static bool bsp_i2c_init_flag = false;
 
 /* Global Functions Implementation ============================================================= */
 
-int8_t bsp_i2c_init( I2C_HandleTypeDef *hi2c ){
-	if( hi2c == NULL )
+int8_t bsp_brs_init( BSP_BRS_PERIPH_HANDLES_T *ph ){
+	int8_t ret = BRS_RET_OK;
+
+	if( ph == NULL )
 		return BRS_ERR_NULL_POINTER;
 
-	if( bsp_i2c_init_flag )
+	if( bsp_brs_init_flag )
 		return BRS_RET_OK;
 
-	bsp_hi2c = hi2c;
-	bsp_i2c_init_flag = true;
+	for( uint8_t j=0; j<BSP_BRS_HANDLE_COUNT_ADC; j++ ){
+		bsp_brs_ph.hadc[j] = ph->hadc[j];
+	}
+	for( uint8_t j=0; j<BSP_BRS_HANDLE_COUNT_I2C; j++ ){
+		bsp_brs_ph.hi2c[j] = ph->hi2c[j];
+	}
+	for( uint8_t j=0; j<BSP_BRS_HANDLE_COUNT_SPI; j++ ){
+		bsp_brs_ph.hspi[j] = ph->hspi[j];
+	}
+	for( uint8_t j=0; j<BSP_BRS_HANDLE_COUNT_TIM; j++ ){
+		bsp_brs_ph.htim[j] = ph->htim[j];
+	}
+	for( uint8_t j=0; j<BSP_BRS_HANDLE_COUNT_UART; j++ ){
+		bsp_brs_ph.huart[j] = ph->huart[j];
+	}
 
-	return BRS_RET_OK;
+	/*
+	 * @note: same i2c bus is shared between IO Expander and Barometer.
+	 */
+	bsp_i2c_init( bsp_brs_ph.hi2c[BSP_BRS_HI2C_IO_EXPANDER] );
+
+	/*
+	 * @note: same i2c bus is shared between IO Expander and Barometer.
+	 */
+	bsp_tim_init( bsp_brs_ph.htim );
+
+	bsp_brs_init_flag = true;
+
+	return ret;
 }
 
-int8_t bsp_i2c_write_reg( uint8_t addr, uint8_t reg, uint8_t *p_data ){
-  int8_t ret = BRS_RET_OK;
+ADC_HandleTypeDef *bsp_brs_get_hadc( uint8_t id ){
+	if( !bsp_brs_init_flag )
+		return NULL;
 
-  if( bsp_hi2c == NULL )
-    return BRS_ERR_NULL_POINTER;
+	if( id >= BSP_BRS_HANDLE_COUNT_ADC )
+		return NULL;
 
-  if( !bsp_i2c_init_flag )
-    return BRS_ERR_NOT_INIT;
-
-  ret = HAL_I2C_Mem_Write( bsp_hi2c, addr, reg, I2C_MEMADD_SIZE_8BIT,
-                           p_data, sizeof(uint8_t), BSP_I2C_STD_TIMEOUT );
-
-  return ret;
+	return bsp_brs_ph.hadc[id];
 }
 
-int8_t bsp_i2c_read_reg( uint8_t addr, uint8_t reg, uint8_t *p_data ){
-  int8_t ret = BRS_RET_OK;
+I2C_HandleTypeDef *bsp_brs_get_hi2c( uint8_t id ){
+	if( !bsp_brs_init_flag )
+		return NULL;
 
-  if( bsp_hi2c == NULL )
-    return BRS_ERR_NULL_POINTER;
+	if( id >= BSP_BRS_HANDLE_COUNT_I2C )
+		return NULL;
 
-  if( !bsp_i2c_init_flag )
-    return BRS_ERR_NOT_INIT;
+	return bsp_brs_ph.hi2c[id];
+}
 
-  ret = HAL_I2C_Mem_Read( bsp_hi2c, addr, reg, I2C_MEMADD_SIZE_8BIT,
-                           p_data, sizeof(uint8_t), BSP_I2C_STD_TIMEOUT );
+SPI_HandleTypeDef *bsp_brs_get_hspi( uint8_t id ){
+	if( !bsp_brs_init_flag )
+		return NULL;
 
-  return ret;
+	if( id >= BSP_BRS_HANDLE_COUNT_SPI )
+		return NULL;
+
+	return bsp_brs_ph.hspi[id];
+}
+
+TIM_HandleTypeDef *bsp_brs_get_htim( uint8_t id ){
+	if( !bsp_brs_init_flag )
+		return NULL;
+
+	if( id >= BSP_BRS_HANDLE_COUNT_TIM )
+		return NULL;
+
+	return bsp_brs_ph.htim[id];
+}
+
+UART_HandleTypeDef *bsp_brs_get_huart( uint8_t id ){
+	if( !bsp_brs_init_flag )
+		return NULL;
+
+	if( id >= BSP_BRS_HANDLE_COUNT_UART )
+		return NULL;
+
+	return bsp_brs_ph.huart[id];
 }
 
 /* Local Functions Implementation ============================================================== */
