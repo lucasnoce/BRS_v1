@@ -39,8 +39,8 @@
 
 /* Includes ==================================================================================== */
 
+#include <stdint.h>
 #include <stdbool.h>
-#include "stm32f4xx_hal.h"
 
 /* Definitions ================================================================================= */
 
@@ -49,17 +49,22 @@
 /* Enums ======================================================================================= */
 
 /*!
-  @brief        Enumerates all the available LEDs.
+  @brief	Enumerates all the available LEDs.
+
+  @note 	A total of 8 LEDs are used together with the IO Expander.
+  @note 	The LED number (LEDn) directly corresponds to the IO Expander GPIO number.
+  @note 	The State Machine is encoded as 4 bit binary number (e.g. state 5 is 0b0101).
+  @note 	The LEDs related to State Machine indication will not have access to blink functions.
 */
 typedef enum{
-	LEDS_LED_0 = 0,
-	LEDS_LED_1,
-	LEDS_LED_2,
-	LEDS_LED_3,
-	LEDS_LED_4,
-	LEDS_LED_5,
-	LEDS_LED_6,
-	LEDS_LED_7,
+	LEDS_LED_0 = 0,	// DEBUG: For general use
+	LEDS_LED_1,		// DEBUG: For general use
+	LEDS_LED_2,		// RCV: Used to indicate vehicle Recovery
+	LEDS_LED_3,		// LOW_BAT: Used to indicate BRS low battery
+	LEDS_LED_4,		// SM0: State Machine state, bit 0
+	LEDS_LED_5,		// SM1: State Machine state, bit 1
+	LEDS_LED_6,		// SM2: State Machine state, bit 2
+	LEDS_LED_7,		// SM3: State Machine state, bit 3
 	LEDS_ALL_LEDS,
 } LEDS_LED_E;
 
@@ -73,7 +78,7 @@ typedef enum{
 
 /* Global Functions ============================================================================ */
 
-int8_t leds_init( TIM_HandleTypeDef *htim );
+int8_t leds_init( void );
 int8_t leds_on( uint8_t led );
 int8_t leds_off( uint8_t led );
 int8_t leds_toggle( uint8_t led );

@@ -43,9 +43,6 @@
 
 #include "../Utilities/brs_errno.h"
 
-#include "bsp_i2c.h"
-#include "bsp_timers.h"
-
 /* Definitions ================================================================================= */
 
 
@@ -108,6 +105,56 @@ int8_t bsp_brs_init( BSP_BRS_PERIPH_HANDLES_T *ph ){
 	bsp_brs_init_flag = true;
 
 	return ret;
+}
+
+ADC_HandleTypeDef *bsp_brs_get_hadc( uint8_t id ){
+	if( !bsp_brs_init_flag )
+		return NULL;
+
+	if( id >= BSP_BRS_HANDLE_COUNT_ADC )
+		return NULL;
+
+	return bsp_brs_ph.hadc[id];
+}
+
+I2C_HandleTypeDef *bsp_brs_get_hi2c( uint8_t id ){
+	if( !bsp_brs_init_flag )
+		return NULL;
+
+	if( id >= BSP_BRS_HANDLE_COUNT_I2C )
+		return NULL;
+
+	return bsp_brs_ph.hi2c[id];
+}
+
+SPI_HandleTypeDef *bsp_brs_get_hspi( uint8_t id ){
+	if( !bsp_brs_init_flag )
+		return NULL;
+
+	if( id >= BSP_BRS_HANDLE_COUNT_SPI )
+		return NULL;
+
+	return bsp_brs_ph.hspi[id];
+}
+
+TIM_HandleTypeDef *bsp_brs_get_htim( uint8_t id ){
+	if( !bsp_brs_init_flag )
+		return NULL;
+
+	if( id >= BSP_BRS_HANDLE_COUNT_TIM )
+		return NULL;
+
+	return bsp_brs_ph.htim[id];
+}
+
+UART_HandleTypeDef *bsp_brs_get_huart( uint8_t id ){
+	if( !bsp_brs_init_flag )
+		return NULL;
+
+	if( id >= BSP_BRS_HANDLE_COUNT_UART )
+		return NULL;
+
+	return bsp_brs_ph.huart[id];
 }
 
 /* Local Functions Implementation ============================================================== */

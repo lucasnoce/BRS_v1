@@ -41,6 +41,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "../../BSP/bsp_timers.h"
 #include "../../Utilities/brs_errno.h"
 #include "../io_expander/io_expander.h"
 
@@ -50,7 +51,13 @@
 
 /* Enums ======================================================================================= */
 
-
+typedef enum{
+	LEDS_TIM_CHANNEL_0_LED_0 = 0,
+	LEDS_TIM_CHANNEL_1_LED_1,
+	LEDS_TIM_CHANNEL_2_LED_2,
+	LEDS_TIM_CHANNEL_3_LED_3,
+	LEDS_TIM_CHANNEL_ALL,
+} LEDS_TIM_CHANNEL_E;
 
 /* Typedefs ==================================================================================== */
 
@@ -62,28 +69,54 @@ typedef struct LEDS_DATA_TAG{
 
 /* Static Variables ============================================================================ */
 
-static TIM_HandleTypeDef *leds_htim = NULL;
-
 static bool leds_init_flag = false;
 static LEDS_DATA_T leds_data;
 
 /* Local Function Prototypes =================================================================== */
 
+static inline int8_t _leds_stop_tim_oc_it( uint8_t led ){
+	int8_t ret = BRS_RET_OK;
 
+	if( led > LEDS_TIM_CHANNEL_ALL ){
+		return BRS_RET_OK;
+	}
+	else if( led == LEDS_TIM_CHANNEL_ALL ){
+		for( uint8_t i=0; i<LEDS_TIM_CHANNEL_ALL; i++ ){
+			ret += bsp_tim_oc_stop_it( BSP_TIMER_ID_LEDS, i );
+		}
+	}
+	else{
+		ret = bsp_tim_oc_stop_it( BSP_TIMER_ID_LEDS, led );
+	}
+
+	return ret;
+}
+
+static inline int8_t _leds_start_tim_oc_it( uint8_t led ){
+	int8_t ret = BRS_RET_OK;
+
+	if( led > LEDS_TIM_CHANNEL_ALL ){
+		return BRS_RET_OK;
+	}
+	else if( led == LEDS_TIM_CHANNEL_ALL ){
+		for( uint8_t i=0; i<LEDS_TIM_CHANNEL_ALL; i++ ){
+			ret += bsp_tim_oc_start_it( BSP_TIMER_ID_LEDS, i );
+		}
+	}
+	else{
+		ret = bsp_tim_oc_start_it( BSP_TIMER_ID_LEDS, led );
+	}
+
+	return ret;
+}
 
 /* Global Functions Implementation ============================================================= */
 
-int8_t leds_init( TIM_HandleTypeDef *htim ){
+int8_t leds_init( void ){
 	int8_t ret = BRS_RET_OK;
-
-	if( htim == NULL )
-		return BRS_ERR_NULL_POINTER;
 
 	if( leds_init_flag )
 		return BRS_RET_OK;
-
-	leds_htim = htim;
-	leds_init_flag = true;
 
 	leds_data.state = 0;
 	leds_data.blink = 0;
@@ -92,6 +125,9 @@ int8_t leds_init( TIM_HandleTypeDef *htim ){
 	ret = io_expander_config( IO_EXPANDER_ALL_GPIOS,
 			IO_EXPANDER_MOD_ALL( IO_EXPANDER_REG_VAL_DIRECTION_OUTPUT ),
 			IO_EXPANDER_MOD_ALL( IO_EXPANDER_REG_VAL_POLARITY_NORMAL ) );
+
+	if( ret == BRS_RET_OK )
+		leds_init_flag = true;
 
 	return ret;
 }
@@ -129,15 +165,16 @@ int8_t leds_off( uint8_t led ){
 		return BRS_ERR_INVALID_PARAM;
 	}
 	else if( led < LEDS_ALL_LEDS ){
-		//HAL_TIM_OC_Stop_IT( p_leds_htim, leds_data[led].channel );  // todo
 		leds_data.state &= ~( 1 << led );
 		leds_data.blink &= ~( 1 << led );
 		ret = io_expander_write( led, IO_EXPANDER_REG_VAL_OUTPUT_LOW );
+		ret += _leds_stop_tim_oc_it( led );
 	}
 	else{
 		leds_data.state = 0x00;
 		leds_data.blink = 0x00;
 		ret = io_expander_write( IO_EXPANDER_ALL_GPIOS, leds_data.state );
+		ret += _leds_stop_tim_oc_it( LEDS_TIM_CHANNEL_ALL );
 	}
 
 	return ret;
@@ -176,15 +213,16 @@ int8_t leds_blink( uint8_t led, bool fast ){
 		return BRS_ERR_INVALID_PARAM;
 	}
 	else if( led < LEDS_ALL_LEDS ){
-		//HAL_TIM_OC_Start_IT( p_leds_htim, leds_data[i].channel );  // todo
 		leds_data.state ^= ( 1 << led );
 		leds_data.blink &= ~( 1 << led );
 		ret = io_expander_write( led, ( ( leds_data.state >> led ) & 0x01 ) );
+		ret += _leds_start_tim_oc_it( led );
 	}
 	else{
 		leds_data.state ^= 0xFF;
 		leds_data.blink = 0x00;
 		ret = io_expander_write( IO_EXPANDER_ALL_GPIOS, leds_data.state );
+		ret += _leds_start_tim_oc_it( LEDS_TIM_CHANNEL_ALL );
 	}
 
 	return ret;
