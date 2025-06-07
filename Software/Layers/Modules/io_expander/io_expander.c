@@ -62,10 +62,10 @@
   @param        direction: direction value of each GPIO.
 */
 typedef struct IO_EXPANDER_DATA_TAG{
-  uint8_t input;
-  uint8_t output;
-  uint8_t polarity;
-  uint8_t direction;
+	uint8_t input;
+	uint8_t output;
+	uint8_t polarity;
+	uint8_t direction;
 } IO_EXPANDER_DATA_T;
 
 /* Static Variables ============================================================================ */
@@ -73,6 +73,8 @@ typedef struct IO_EXPANDER_DATA_TAG{
 static IO_EXPANDER_DATA_T io_expander_data;
 
 static bool io_expander_driver_init = false;
+
+static uint8_t buf[2];
 
 /* Local Function Prototypes =================================================================== */
 
@@ -88,84 +90,89 @@ static bool io_expander_driver_init = false;
 static inline void _io_expander_set_data_bit( uint8_t *p_data, uint8_t val, uint8_t bit );
 
 /*!
-  @brief        Writes a byte to a register through STM32 HAL_I2C.
+  @brief        Writes one byte to a register.
 
   @param[in]    reg: the IO Expander register to be written.
-  @param[in]    p_data: pointer to the data to be written.
+  @param[in]    data: the 1-byte data to be written.
 
   @returns      0 if success, `BRS_ERR_[]` otherwise (see brs_errno.h).
 */
-static inline int8_t _io_expander_i2c_write( uint8_t reg, uint8_t *p_data );
+static inline int8_t _io_expander_i2c_write( uint8_t reg, uint8_t data );
 
 /* Global Functions Implementation ============================================================= */
 
 int8_t io_expander_init( void ){
-  int8_t ret = BRS_RET_OK;
+	int8_t ret = BRS_RET_OK;
 
-  if( io_expander_driver_init )
-    return BRS_RET_OK;
+	if( io_expander_driver_init )
+		return BRS_RET_OK;
 
-  ret = io_expander_config( IO_EXPANDER_ALL_GPIOS,
-                            ~( IO_EXPANDER_REG_VAL_DIRECTION_INPUT - 1 ),
-                            ~( IO_EXPANDER_REG_VAL_POLARITY_NORMAL - 1 ) );  // ~0 = 0xFF and ~(-1) = 0x00
+	//  ret = io_expander_config( IO_EXPANDER_ALL_GPIOS,
+	//                            ~( IO_EXPANDER_REG_VAL_DIRECTION_INPUT - 1 ),
+	//                            ~( IO_EXPANDER_REG_VAL_POLARITY_NORMAL - 1 ) );  // ~0 = 0xFF and ~(-1) = 0x00
 
-  if( ret == 0 )
-    io_expander_driver_init = true;
+	buf[0] = 0;
+	buf[1] = 0;
 
-  return ret;
+	if( ret == BRS_RET_OK )
+		io_expander_driver_init = true;
+
+	return ret;
 }
 
 int8_t io_expander_config( uint8_t gpio, uint8_t direction, uint8_t polarity ){
-  int8_t ret = BRS_RET_OK;
+	int8_t ret = BRS_RET_OK;
 
-  if( !io_expander_driver_init )
-    return BRS_ERR_NOT_INIT;
+	if( !io_expander_driver_init )
+		return BRS_ERR_NOT_INIT;
 
-  if( gpio > IO_EXPANDER_ALL_GPIOS ){
-    return BRS_ERR_INVALID_PARAM;
-  }
-  else if( gpio == IO_EXPANDER_ALL_GPIOS ){
-    io_expander_data.direction = direction;
-    io_expander_data.polarity  = polarity;
-  }
-  else{
-    _io_expander_set_data_bit( &io_expander_data.direction, ( direction & 0x01 ), gpio );
-    _io_expander_set_data_bit( &io_expander_data.polarity, ( polarity & 0x01 ), gpio );
-  }
+	if( gpio > IO_EXPANDER_ALL_GPIOS ){
+		return BRS_ERR_INVALID_PARAM;
+	}
+	else if( gpio == IO_EXPANDER_ALL_GPIOS ){
+		io_expander_data.direction = direction;
+		io_expander_data.polarity  = polarity;
+	}
+	else{
+		_io_expander_set_data_bit( &io_expander_data.direction, ( direction & 0x01 ), gpio );
+		_io_expander_set_data_bit( &io_expander_data.polarity, ( polarity & 0x01 ), gpio );
+	}
 
-  ret += _io_expander_i2c_write( IO_EXPANDER_CMD_REG_DIRECTION, &io_expander_data.direction );
-  ret += _io_expander_i2c_write( IO_EXPANDER_CMD_REG_POLARITY, &io_expander_data.polarity );
+	ret += _io_expander_i2c_write( IO_EXPANDER_CMD_REG_DIRECTION, io_expander_data.direction );
+	ret += _io_expander_i2c_write( IO_EXPANDER_CMD_REG_POLARITY, io_expander_data.polarity );
 
-  return ret;
+	return ret;
 }
 
 int8_t io_expander_write( uint8_t gpio, uint8_t value ){
-  int8_t ret = BRS_RET_OK;
+	int8_t ret = BRS_RET_OK;
 
-  if( !io_expander_driver_init )
-    return BRS_ERR_NOT_INIT;
+	if( !io_expander_driver_init )
+		return BRS_ERR_NOT_INIT;
 
-  if( gpio > IO_EXPANDER_ALL_GPIOS ){
-    return BRS_ERR_INVALID_PARAM;
-  }
-  else if( gpio == IO_EXPANDER_ALL_GPIOS ){
-    io_expander_data.output = value;
-  }
-  else{
-    _io_expander_set_data_bit( &io_expander_data.output, ( value & 0x01 ), gpio );
-  }
+	if( gpio > IO_EXPANDER_ALL_GPIOS ){
+		return BRS_ERR_INVALID_PARAM;
+	}
+	else if( gpio == IO_EXPANDER_ALL_GPIOS ){
+		io_expander_data.output = value;
+	}
+	else{
+		_io_expander_set_data_bit( &io_expander_data.output, ( value & 0x01 ), gpio );
+	}
 
-  ret = _io_expander_i2c_write( IO_EXPANDER_CMD_REG_DIRECTION, &io_expander_data.output );
+	ret = _io_expander_i2c_write( IO_EXPANDER_CMD_REG_OUTPUT_PORT, io_expander_data.output );
 
-  return ret;
+	return ret;
 }
 
 /* Local Functions Implementation ============================================================== */
 
 static inline void _io_expander_set_data_bit( uint8_t *p_data, uint8_t val, uint8_t bit ){
-  *p_data = ( ( *p_data & ~( 1 << bit ) ) | ( ( val & 0x01 ) << bit ) );
+	*p_data = ( ( *p_data & ~( 1 << bit ) ) | ( ( val & 0x01 ) << bit ) );
 }
 
-static inline int8_t _io_expander_i2c_write( uint8_t reg, uint8_t *p_data ){
-  return bsp_i2c_write_reg( IO_EXPANDER_I2C_ADDR, reg, p_data );
+static inline int8_t _io_expander_i2c_write( uint8_t reg, uint8_t data ){
+	buf[0] = reg;
+	buf[1] = data;
+	return bsp_i2c_transmit( IO_EXPANDER_I2C_ADDR, buf, sizeof(buf) );
 }

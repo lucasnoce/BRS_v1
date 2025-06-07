@@ -1090,7 +1090,8 @@ HAL_StatusTypeDef HAL_I2C_Master_Transmit(I2C_HandleTypeDef *hi2c, uint16_t DevA
     hi2c->XferOptions = I2C_NO_OPTION_FRAME;
 
     /* Send Slave Address */
-    if (I2C_MasterRequestWrite(hi2c, DevAddress, Timeout, tickstart) != HAL_OK)
+    int ret = I2C_MasterRequestWrite(hi2c, DevAddress, Timeout, tickstart);
+    if (ret != HAL_OK)
     {
       return HAL_ERROR;
     }

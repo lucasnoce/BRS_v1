@@ -163,9 +163,9 @@ int8_t leds_init( void ){
 		leds_data.blink_speed[i] = 0;
 	}
 
-	ret = io_expander_config( IO_EXPANDER_ALL_GPIOS,
-			IO_EXPANDER_MOD_ALL( IO_EXPANDER_REG_VAL_DIRECTION_OUTPUT ),
-			IO_EXPANDER_MOD_ALL( IO_EXPANDER_REG_VAL_POLARITY_NORMAL ) );
+//	ret = io_expander_config( IO_EXPANDER_ALL_GPIOS,
+//			IO_EXPANDER_MOD_ALL( IO_EXPANDER_REG_VAL_DIRECTION_OUTPUT ),
+//			IO_EXPANDER_MOD_ALL( IO_EXPANDER_REG_VAL_POLARITY_NORMAL ) );
 
 	if( ret == BRS_RET_OK )
 		leds_init_flag = true;

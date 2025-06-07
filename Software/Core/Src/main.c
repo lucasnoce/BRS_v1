@@ -23,6 +23,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "../../Layers/BSP/bsp_brs.h"
+#include "../../Layers/Modules/modules_brs.h"
+#include "../../Layers/Modules/leds/leds.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -128,7 +130,28 @@ int main(void)
 
   bsp_ph.huart[0] = &huart1;
 
-  bsp_brs_init( &bsp_ph );
+//  bsp_brs_init( &bsp_ph );
+//  modules_brs_init();
+  int ret = 0;
+  uint8_t buf[2] = { 0x01, 0xFF };
+  while(1){
+	  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+	  ret = HAL_I2C_Master_Transmit(&hi2c1, (0x38<<1), buf, 2, 1000);
+	  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+	  HAL_Delay(1000);
+  }
+  ret++;
+
+  HAL_Delay( 1000 );
+
+  leds_on( LEDS_ALL_LEDS );
+  HAL_Delay( 500 );
+  leds_off( LEDS_ALL_LEDS );
+  HAL_Delay( 500 );
+
+  leds_blink( 0, LEDS_BLINK_SPEED_SLOW );
+  HAL_Delay( 500 );
+  uint8_t count = 0;
 
   /* USER CODE END 2 */
 
@@ -139,6 +162,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	leds_toggle( ( count++ % 8 ) );
+	HAL_Delay( 50 );
   }
   /* USER CODE END 3 */
 }
@@ -166,10 +191,10 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM = 16;
-  RCC_OscInitStruct.PLL.PLLN = 192;
+  RCC_OscInitStruct.PLL.PLLM = 15;
+  RCC_OscInitStruct.PLL.PLLN = 144;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-  RCC_OscInitStruct.PLL.PLLQ = 4;
+  RCC_OscInitStruct.PLL.PLLQ = 5;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -373,7 +398,7 @@ static void MX_TIM1_Init(void)
 
   /* USER CODE END TIM1_Init 1 */
   htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 0;
+  htim1.Init.Prescaler = 16000-1;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim1.Init.Period = 65535;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -458,7 +483,7 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 0;
+  htim2.Init.Prescaler = 16000-1;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim2.Init.Period = 4294967295;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -553,9 +578,13 @@ static void MX_GPIO_Init(void)
 /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(BRS_RCV_GPIO_Port, BRS_RCV_Pin, GPIO_PIN_RESET);
@@ -563,6 +592,13 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, SPI2_NSS1_Pin|SPI2_NSS0_Pin|BUZZER_Pin|SENS_PWR_Pin
                           |BOARD_PWR_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : LED_DEBUG_Pin */
+  GPIO_InitStruct.Pin = LED_DEBUG_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(LED_DEBUG_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : BRS_RBF_Pin */
   GPIO_InitStruct.Pin = BRS_RBF_Pin;

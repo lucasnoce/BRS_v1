@@ -36,6 +36,7 @@
 
 /* Includes ==================================================================================== */
 
+#include "main.h"
 #include "io_expander_sim.h"
 
 #include <stdint.h>
@@ -59,11 +60,11 @@ static I2C_HandleTypeDef *sim_hi2c;
 
 //static uint8_t tx_buff[IO_EXPANDER_SIM_BUFF_SIZE];
 static uint8_t rx_buff[IO_EXPANDER_SIM_BUFF_SIZE];
-static uint8_t address;
+//static uint8_t address;
 static uint8_t command;
 static uint8_t value;
 
-static bool xfer_complete;
+static volatile bool xfer_complete;
 
 /* Local Function Prototypes =================================================================== */
 
@@ -85,6 +86,14 @@ void io_expander_sim_init( I2C_HandleTypeDef *hi2c1 ){
 		rx_buff[i] = 0;
 	}
 
+	HAL_GPIO_WritePin( GPIOA, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4
+							  |GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7, GPIO_PIN_SET );
+	HAL_GPIO_WritePin( GPIOB, GPIO_PIN_0, GPIO_PIN_SET );
+	HAL_Delay( 100 );
+	HAL_GPIO_WritePin( GPIOA, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4
+							  |GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7, GPIO_PIN_RESET );
+	HAL_GPIO_WritePin( GPIOB, GPIO_PIN_0, GPIO_PIN_RESET );
+
 	if( HAL_I2C_EnableListen_IT( sim_hi2c ) != HAL_OK ){
 		while( 1 ){
 			HAL_Delay( 10 );
@@ -95,34 +104,63 @@ void io_expander_sim_init( I2C_HandleTypeDef *hi2c1 ){
 void io_expander_sim_loop( void ){
 	if( xfer_complete ){
 		xfer_complete = false;
-		HAL_GPIO_WritePin( GPIOA, GPIO_PIN_1, ( ( value >> 0 ) & 0x01 ) );
-		HAL_GPIO_WritePin( GPIOA, GPIO_PIN_2, ( ( value >> 1 ) & 0x01 ) );
-		HAL_GPIO_WritePin( GPIOA, GPIO_PIN_3, ( ( value >> 2 ) & 0x01 ) );
-		HAL_GPIO_WritePin( GPIOA, GPIO_PIN_4, ( ( value >> 3 ) & 0x01 ) );
-		HAL_GPIO_WritePin( GPIOA, GPIO_PIN_5, ( ( value >> 4 ) & 0x01 ) );
-		HAL_GPIO_WritePin( GPIOA, GPIO_PIN_6, ( ( value >> 5 ) & 0x01 ) );
-		HAL_GPIO_WritePin( GPIOA, GPIO_PIN_7, ( ( value >> 6 ) & 0x01 ) );
-		HAL_GPIO_WritePin( GPIOB, GPIO_PIN_0, ( ( value >> 7 ) & 0x01 ) );
+//		command = rx_buff[0];
+//		value = rx_buff[1];
+//		HAL_GPIO_WritePin( GPIOA, GPIO_PIN_1, ( ( value >> 0 ) & 0x01 ) );
+//		HAL_GPIO_WritePin( GPIOA, GPIO_PIN_2, ( ( value >> 1 ) & 0x01 ) );
+//		HAL_GPIO_WritePin( GPIOA, GPIO_PIN_3, ( ( value >> 2 ) & 0x01 ) );
+//		HAL_GPIO_WritePin( GPIOA, GPIO_PIN_4, ( ( value >> 3 ) & 0x01 ) );
+//		HAL_GPIO_WritePin( GPIOA, GPIO_PIN_5, ( ( value >> 4 ) & 0x01 ) );
+//		HAL_GPIO_WritePin( GPIOA, GPIO_PIN_6, ( ( value >> 5 ) & 0x01 ) );
+//		HAL_GPIO_WritePin( GPIOA, GPIO_PIN_7, ( ( value >> 6 ) & 0x01 ) );
+//		HAL_GPIO_WritePin( GPIOB, GPIO_PIN_0, ( ( value >> 7 ) & 0x01 ) );
+		HAL_GPIO_WritePin( GPIOA, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4
+                				  |GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7, GPIO_PIN_SET );
+		HAL_GPIO_WritePin( GPIOB, GPIO_PIN_0, GPIO_PIN_SET );
 	}
+	else{
+		HAL_GPIO_WritePin( GPIOA, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4
+		                		  |GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7, GPIO_PIN_RESET );
+		HAL_GPIO_WritePin( GPIOB, GPIO_PIN_0, GPIO_PIN_RESET );
+	}
+	HAL_Delay( 100 );
+	HAL_GPIO_WritePin( GPIOC, GPIO_PIN_13, GPIO_PIN_SET );
 }
 
 void HAL_I2C_AddrCallback( I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, uint16_t AddrMatchCode ){
 	if( TransferDirection == I2C_DIRECTION_TRANSMIT ){  // Master wants to write to slave
-		HAL_I2C_Slave_Receive_IT( hi2c, rx_buff, IO_EXPANDER_SIM_BUFF_SIZE );
+//		HAL_I2C_Slave_Receive_IT( hi2c, rx_buff, IO_EXPANDER_SIM_BUFF_SIZE );
+		HAL_I2C_Slave_Seq_Receive_IT( hi2c, rx_buff, IO_EXPANDER_SIM_BUFF_SIZE, I2C_FIRST_AND_LAST_FRAME );
+	}
+	else{
+		Error_Handler();
 	}
 }
 
 void HAL_I2C_ListenCpltCallback( I2C_HandleTypeDef *hi2c ){  // Ready to listen again
-	xfer_complete = true;
 	HAL_I2C_EnableListen_IT( hi2c );
 }
 
 void HAL_I2C_SlaveRxCpltCallback( I2C_HandleTypeDef *hi2c ){
 	if( hi2c->Instance == I2C1 ){
-		address = rx_buff[0];
-		command = rx_buff[1];
-		value = rx_buff[2];
+		HAL_GPIO_WritePin( GPIOC, GPIO_PIN_13, GPIO_PIN_RESET );
+//		address = rx_buff[0];
+		command = rx_buff[0];
+		value = rx_buff[1];
+		rx_buff[0] = 0;
+		rx_buff[1] = 0;
+		xfer_complete = true;
+		HAL_GPIO_WritePin( GPIOC, GPIO_PIN_13, GPIO_PIN_SET );
 	}
+//	HAL_I2C_EnableListen_IT( hi2c );
+}
+
+void HAL_I2C_ErrorCallback( I2C_HandleTypeDef *hi2c ){
+//	while(1){
+//		HAL_GPIO_TogglePin( GPIOC, GPIO_PIN_13 );
+//		HAL_Delay( 500 );
+//	}
+	HAL_I2C_EnableListen_IT( hi2c );
 }
 
 /* Local Functions Implementation ============================================================== */

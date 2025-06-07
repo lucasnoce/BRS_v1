@@ -45,7 +45,7 @@
 
 /* Definitions ================================================================================= */
 
-#define BSP_I2C_STD_TIMEOUT 100
+#define BSP_I2C_STD_TIMEOUT (uint32_t) 100
 
 /* Enums ======================================================================================= */
 
@@ -78,6 +78,34 @@ int8_t bsp_i2c_init( I2C_HandleTypeDef *hi2c ){
 	bsp_i2c_init_flag = true;
 
 	return BRS_RET_OK;
+}
+
+int8_t bsp_i2c_transmit( uint8_t addr, uint8_t *p_data, uint8_t data_size ){
+  int8_t ret = BRS_RET_OK;
+
+  if( bsp_hi2c == NULL )
+    return BRS_ERR_NULL_POINTER;
+
+  if( !bsp_i2c_init_flag )
+    return BRS_ERR_NOT_INIT;
+
+  ret = HAL_I2C_Master_Transmit( bsp_hi2c, (uint16_t) addr, p_data, (uint16_t) data_size, BSP_I2C_STD_TIMEOUT );
+
+  return ret;
+}
+
+int8_t bsp_i2c_receive( uint8_t addr, uint8_t *p_data, uint8_t data_size ){
+  int8_t ret = BRS_RET_OK;
+
+  if( bsp_hi2c == NULL )
+    return BRS_ERR_NULL_POINTER;
+
+  if( !bsp_i2c_init_flag )
+    return BRS_ERR_NOT_INIT;
+
+  ret = HAL_I2C_Master_Receive( bsp_hi2c, (uint16_t) addr, p_data, (uint16_t) data_size, BSP_I2C_STD_TIMEOUT );
+
+  return ret;
 }
 
 int8_t bsp_i2c_write_reg( uint8_t addr, uint8_t reg, uint8_t *p_data ){

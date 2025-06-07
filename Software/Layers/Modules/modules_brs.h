@@ -59,6 +59,6 @@
 
 /* Global Functions ============================================================================ */
 
-
+int8_t modules_brs_init( void );
 
 #endif /* __MODULES_MODULES_BRS_H__ */

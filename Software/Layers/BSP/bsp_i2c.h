@@ -61,6 +61,8 @@
 /* Global Functions ============================================================================ */
 
 int8_t bsp_i2c_init( I2C_HandleTypeDef *hi2c );
+int8_t bsp_i2c_transmit( uint8_t addr, uint8_t *p_data, uint8_t data_size );
+int8_t bsp_i2c_receive( uint8_t addr, uint8_t *p_data, uint8_t data_size );
 int8_t bsp_i2c_write_reg( uint8_t addr, uint8_t reg, uint8_t *p_data );
 int8_t bsp_i2c_read_reg( uint8_t addr, uint8_t reg, uint8_t *p_data );
 
