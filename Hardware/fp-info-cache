@@ -1,4 +1,4 @@
-23667990821978939
+23685459969771962
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -21,6 +21,55 @@ AudioJack_Vertical
 5
 5
 BRS_Footprints
+Battery_SolderTerminal
+
+
+0
+2
+2
+BRS_Footprints
+Buzzer_SMD_8,5x8,5
+
+
+0
+4
+4
+BRS_Footprints
+CST3
+
+
+0
+3
+3
+BRS_Footprints
+External_Antenna_THT
+
+
+0
+1
+1
+BRS_Footprints
+HC-4S-SMD-Mini
+
+
+0
+2
+2
+BRS_Footprints
+RF_Filter_RLC_SMD_0402
+
+
+0
+2
+2
+BRS_Footprints
+SMD_SolderJumper_Micro
+
+
+0
+2
+2
+BRS_Footprints
 SMD_SolderJumper_Small
 
 
@@ -28,12 +77,33 @@ SMD_SolderJumper_Small
 2
 2
 BRS_Footprints
+SMD_SolderJumper_Triple_Micro
+
+
+0
+3
+3
+BRS_Footprints
 SMD_SolderJumper_Triple_Small
 
 
 0
 3
 3
+BRS_Footprints
+STK8321_LGA-12
+
+
+0
+12
+12
+BRS_Footprints
+VQFN-HR
+
+
+0
+0
+0
 Battery
 BatteryClip_Keystone_54_D16-19mm
 Battery clip for batteries with a diameter between 16-19 mm: https://www.keyelco.com/product.cfm/product_id/826
